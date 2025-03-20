@@ -41,6 +41,7 @@
     <copyright>Copyright © 2025 Bharani. All rights reserved.</copyright>
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
+    <project.Name>Forgex</project.Name>
   </properties>
 
   <dependencies>
