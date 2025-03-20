@@ -22,3 +22,13 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+framework/framework-datastore/target
+framework/framework-datastore/target/*
+framework/framework-message/target
+framework/framework-message/target/*
+framework/framework-registry/target
+framework/framework-registry/target/*
+framework/framework-scheduler/target/*
+
+/framework/framework-datastore/target

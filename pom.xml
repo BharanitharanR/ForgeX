@@ -52,11 +52,11 @@
   </dependencies>
 
   <modules>
-    <module>platform</module>
+    <module>framework</module>
+    <!--
     <module>assimilate</module>
     <module>ruleCrafter</module>
     <module>collator</module>
-    <!--
      -->
   </modules>
   <build>
