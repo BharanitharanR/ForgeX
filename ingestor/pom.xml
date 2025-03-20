@@ -9,14 +9,14 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.batty.forgex</groupId>
-	<artifactId>framework-build</artifactId>
+	<artifactId>service-build</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>forgex-framework-model</name>
-	<description>Framework multi model</description>
+	<name>ingestor-model</name>
+	<description>Ingestor-model</description>
 	<packaging>pom</packaging>
 	<properties>
 		<java.version>21</java.version>
-		<project.id>framework</project.id>
+		<project.id>service</project.id>
 		<JAR_FILE>${project.basedir}/target/${artifactId}-${version}.jar</JAR_FILE>
 		<docker.repo>bharani3ran01/servicesrepo</docker.repo>
 		<docker.image.tag>${version}</docker.image.tag>
@@ -63,16 +63,9 @@
 			<version>0.43.4</version>
 		</dependency>
 	</dependencies>
-	<distributionManagement>
-		<repository>
-			<id>github</id>
-			<name>GitHub OWNER Apache Maven Packages</name>
-			<url>https://maven.pkg.github.com/OWNER/REPOSITORY</url>
-		</repository>
-	</distributionManagement>
 	<modules>
-		<module>framework-datastore</module>
-		<module>framework-message</module>
-		<!-- <module>framework-registry</module> -->
+		<module>ingestor-client</module>
+		<module>ingestor</module>
+		<module>ingestor-IT</module>
 	</modules>
 </project>

@@ -53,8 +53,9 @@
 
   <modules>
     <module>framework</module>
+    <module>ingestor</module>
     <!--
-    <module>assimilate</module>
+
     <module>ruleCrafter</module>
     <module>collator</module>
      -->
