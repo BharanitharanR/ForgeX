@@ -24,6 +24,9 @@
 		<docker.image.tag>${version}</docker.image.tag>
 		<network.name>forgex-integrator</network.name>
 		<doNotPushToDHub>true</doNotPushToDHub>
+		<mongodb.user>admin</mongodb.user>
+		<mongodb.password>admin123</mongodb.password>
+		<mongodb.database>forgex</mongodb.database>
 	</properties>
 
 	<dependencies>
@@ -105,6 +108,16 @@
 									<mode>custom</mode>
 									<name>${network.name}</name>
 								</network>
+								<ports>
+									<port>8081:8081</port>
+								</ports>
+								<env>
+									<JVM_VALUES>
+										-Dmongodb.atlas.connection=mongodb://mongo-1:27017/forgex
+										-Dmongodb.collection.name=ingestor
+									</JVM_VALUES>
+								</env>
+								<dependsOn>mongodb</dependsOn>
 							</run>
 						</image>
 						<!-- MongoDB -->
@@ -116,6 +129,14 @@
 									<mode>custom</mode>
 									<name>${network.name}</name>
 								</network>
+								<ports>
+									<port>27017:27017</port>
+								</ports>
+								<env>
+									<!-- <MONGO_INITDB_ROOT_USERNAME>${mongodb.user}</MONGO_INITDB_ROOT_USERNAME>
+									<MONGO_INITDB_ROOT_PASSWORD>${mongodb.password}</MONGO_INITDB_ROOT_PASSWORD> -->
+									<MONGO_INITDB_DATABASE>${mongodb.database}</MONGO_INITDB_DATABASE>
+								</env>
 							</run>
 						</image>
 					</images>
