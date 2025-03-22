@@ -3,10 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.1</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<groupId>com.batty.forgex</groupId>
+		<artifactId>forgex-parent</artifactId>
+		<version>1.0.0</version>
+		<relativePath/> <!-- Path to the parent POM -->
 	</parent>
 	<groupId>com.batty.forgex</groupId>
 	<artifactId>ingestor</artifactId>
@@ -15,10 +15,11 @@
 	<description>Ingestor Service</description>
 
 	<properties>
+		<forgex.name>${forgex}</forgex.name>
 		<java.version>21</java.version>
 		<project.id>ingestor</project.id>
 		<JAR_FILE>${project.basedir}/target/${artifactId}-${version}.jar</JAR_FILE>
-		<docker.repo>${project.Name}/ingestor-service</docker.repo>
+		<docker.repo>ingestor-service</docker.repo>
 		<docker.image.tag>${version}</docker.image.tag>
 		<springfox.version>2.9.2</springfox.version>
 		<swagger-ui.version>4.15.5</swagger-ui.version>
@@ -131,7 +132,7 @@
 					<skipPush>${doNotPushToDHub}</skipPush>
 					<images>
 						<image>
-							<name>${docker.repo}:${version}</name>
+							<name>${forgex.name}/${docker.repo}:${version}</name>
 							<alias>dockerfile</alias>
 							<build>
 								<contextDir>${project.basedir}</contextDir>
