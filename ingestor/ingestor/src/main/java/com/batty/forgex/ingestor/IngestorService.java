@@ -26,7 +26,8 @@ public class IngestorService implements GraphApi {
     @Autowired
     protected DatastoreImpl dbConnection;
 
-
+    @Autowired
+    protected EntityBuilderActor entityBuilderActor;
 
     @Override
     public ResponseEntity<InlineResponse200> graphProcessPost(GraphInput graphInput) {
@@ -35,11 +36,10 @@ public class IngestorService implements GraphApi {
             Document graphInputDocument = new Document();
             graphInputDocument.put("data", graphInput.toString());
             dbConnection.insertData(graphInputDocument);
-            EntityBuilderActor actor = new EntityBuilderActor();
             ObjectMapper map = new ObjectMapper();
             String jsonString = map.writeValueAsString(graphInput.getNodes());
 
-            actor.act(jsonString);
+            entityBuilderActor.act(jsonString);
             return null;
         }
         catch(Exception e) {
