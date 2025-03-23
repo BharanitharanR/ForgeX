@@ -106,7 +106,7 @@ components:
       properties:
         type:
           type: string
-          enum: [entity, rule, event]
+          enum: [ ENTITY, RULE, EVENT ]
           example: "entity"
         name:
           type: string

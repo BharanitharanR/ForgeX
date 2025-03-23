@@ -162,6 +162,9 @@
 							<modelPackage>com.batty.forgex.ingestor.api.model</modelPackage>
 							<output>${project.build.directory}/generated-sources/remote-openapi</output>
 							<invokerPackage>com.batty.forgex.ingestor.api.client</invokerPackage>
+							<configOptions>
+								<additionalModelTypeAnnotations>@com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)</additionalModelTypeAnnotations>
+							</configOptions>
 						</configuration>
 					</execution>
 				</executions>

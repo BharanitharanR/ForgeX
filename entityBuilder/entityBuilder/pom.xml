@@ -9,17 +9,17 @@
 		<relativePath/> <!-- Path to the parent POM -->
 	</parent>
 	<groupId>com.batty.forgex</groupId>
-	<artifactId>ingestor</artifactId>
+	<artifactId>entityBuilder</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>ingestor</name>
-	<description>Ingestor Service</description>
+	<name>entityBuilder</name>
+	<description>entityBuilder Service</description>
 
 	<properties>
 		<forgex.name>${forgex}</forgex.name>
 		<java.version>21</java.version>
 		<project.id>ingestor</project.id>
 		<JAR_FILE>${project.basedir}/target/${artifactId}-${version}.jar</JAR_FILE>
-		<docker.repo>ingestor-service</docker.repo>
+		<docker.repo>entitybuilder</docker.repo>
 		<docker.image.tag>${version}</docker.image.tag>
 		<springfox.version>2.9.2</springfox.version>
 		<swagger-ui.version>4.15.5</swagger-ui.version>
@@ -118,11 +118,6 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>4.0.1</version>
 		</dependency>
-		<dependency>
-			<groupId>com.batty.forgex</groupId>
-			<artifactId>entity-sdk</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -179,16 +174,16 @@
 						</goals>
 						<configuration>
 							<generatorName>spring</generatorName>
-							<inputSpec>ingestor.yaml</inputSpec>
+							<inputSpec>entityBuilder.yaml</inputSpec>
 							<configOptions>
 								<interfaceOnly>true</interfaceOnly>
 								<skipDefaultInterface>true</skipDefaultInterface>
 							</configOptions>
 							<generateSupportingFiles>false</generateSupportingFiles>
 							<generatorName>spring</generatorName>
-							<packageName>com.batty.forgex.ingestor</packageName>
-							<apiPackage>com.batty.forgex.ingestor.api</apiPackage>
-							<modelPackage>com.batty.forgex.ingestor.model</modelPackage>
+							<packageName>com.batty.forgex.entityBuilder</packageName>
+							<apiPackage>com.batty.forgex.entityBuilder.api</apiPackage>
+							<modelPackage>com.batty.forgex.entityBuilder.model</modelPackage>
 							<typeMappings>time=Date</typeMappings>
 							<importMappings>Date=java.util.Date</importMappings>
 						</configuration>

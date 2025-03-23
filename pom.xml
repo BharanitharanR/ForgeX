@@ -54,6 +54,7 @@
   <modules>
     <module>framework</module>
     <module>ingestor</module>
+    <module>entityBuilder</module>
     <module>integrator</module>
     <!--
     <module>ruleCrafter</module>

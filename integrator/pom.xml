@@ -19,6 +19,7 @@
 	<properties>
 		<forgex.name>${forgex}</forgex.name>
 		<ingestor>ingestor-service</ingestor>
+		<entitybuilder>entitybuilder</entitybuilder>
 		<java.version>21</java.version>
 		<docker.repo>integrator</docker.repo>
 		<docker.image.tag>${version}</docker.image.tag>
@@ -115,6 +116,27 @@
 									<JVM_VALUES>
 										-Dmongodb.atlas.connection=mongodb://mongo-1:27017/forgex
 										-Dmongodb.collection.name=ingestor
+										-DentityBuilder.service.hostname=http://entitybuilder-1:8082
+									</JVM_VALUES>
+								</env>
+								<dependsOn>mongodb</dependsOn>
+							</run>
+						</image>
+						<image>
+							<name>${forgex.name}/${entitybuilder}:${version}</name>
+							<alias>${entitybuilder}</alias>
+							<run>
+								<network>
+									<mode>custom</mode>
+									<name>${network.name}</name>
+								</network>
+								<ports>
+									<port>8082:8082</port>
+								</ports>
+								<env>
+									<JVM_VALUES>
+										-Dmongodb.atlas.connection=mongodb://mongo-1:27017/forgex
+										-Dmongodb.collection.name=entitybuilder
 									</JVM_VALUES>
 								</env>
 								<dependsOn>mongodb</dependsOn>

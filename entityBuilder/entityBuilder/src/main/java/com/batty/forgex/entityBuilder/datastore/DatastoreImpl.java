@@ -1,8 +1,8 @@
-package com.batty.forgex.ingestor.datastore;
+package com.batty.forgex.entityBuilder.datastore;
 
 
 import com.batty.forgex.framework.interfaces.DatastoreInterface;
-import com.batty.forgex.ingestor.model.ServiceCollection;
+import com.batty.forgex.entityBuilder.model.ServiceCollection;
 import jakarta.annotation.PostConstruct;
 import org.bson.Document;
 import org.slf4j.Logger;
