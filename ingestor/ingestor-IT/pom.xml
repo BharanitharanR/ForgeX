@@ -3,22 +3,23 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.1</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<groupId>com.batty.forgex</groupId>
+		<artifactId>forgex-parent</artifactId>
+		<version>1.0.0</version>
+		<relativePath/> <!-- Path to the parent POM -->
 	</parent>
-	<groupId>com.batt.forgex</groupId>
+	<groupId>com.batty.forgex</groupId>
 	<artifactId>ingestor-it</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ingestorit</name>
 	<description>service it attempt</description>
 
 	<properties>
+		<forgex>${forgex}</forgex>
 		<java.version>21</java.version>
 		<project.id>ingestorit</project.id>
 		<JAR_FILE>${project.basedir}/target/${artifactId}-${version}.jar</JAR_FILE>
-		<docker.repo>bharani3ran01/servicesit</docker.repo>
+		<docker.repo>${forgex}/ingestor-it</docker.repo>
 		<docker.image.tag>${version}</docker.image.tag>
 		<springfox.version>2.9.2</springfox.version>
 		<swagger-ui.version>4.15.5</swagger-ui.version>
@@ -132,10 +133,22 @@
 								</ports>
 							</run>
 						</image>
+						<image>
+							<name>mongo:latest</name>
+							<alias>mongodb</alias>
+							<run>
+							</run>
+						</image>
 					</images>
-
 				</configuration>
 				<executions>
+					<execution>
+						<id>runDocks</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
 					<execution>
 						<id>buildDock</id>
 						<phase>post-integration-test</phase>

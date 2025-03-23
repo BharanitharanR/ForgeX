@@ -1,0 +1,138 @@
+{
+  "nodes": [
+    {
+      "type": "entity",
+      "name": "Sale",
+      "fields": [
+        {"name": "saleId", "type": "string", "required": true},
+        {"name": "customerId", "type": "string", "required": true},
+        {"name": "totalAmount", "type": "number", "required": true},
+        {"name": "items", "type": "array", "items": {"type": "string"}}
+      ]
+    },
+    {
+      "type": "entity",
+      "name": "Refund",
+      "fields": [
+        {"name": "refundId", "type": "string", "required": true},
+        {"name": "saleId", "type": "string", "required": true},
+        {"name": "refundAmount", "type": "number", "required": true},
+        {"name": "refundDate", "type": "date", "required": true}
+      ]
+    },
+    {
+      "type": "entity",
+      "name": "Void",
+      "fields": [
+        {"name": "voidId", "type": "string", "required": true},
+        {"name": "saleId", "type": "string", "required": true},
+        {"name": "voidDate", "type": "date", "required": true}
+      ]
+    },
+    {
+      "type": "entity",
+      "name": "LoyaltyProgram",
+      "fields": [
+        {"name": "programId", "type": "string", "required": true},
+        {"name": "customerId", "type": "string", "required": true},
+        {"name": "points", "type": "number", "required": true},
+        {"name": "tier", "type": "string", "required": true}
+      ]
+    },
+    {
+      "type": "entity",
+      "name": "Customer",
+      "fields": [
+        {"name": "customerId", "type": "string", "required": true},
+        {"name": "name", "type": "string", "required": true},
+        {"name": "email", "type": "string", "required": true}
+      ]
+    },
+    {
+      "type": "entity",
+      "name": "ItemDB",
+      "fields": [
+        {"name": "itemId", "type": "string", "required": true},
+        {"name": "name", "type": "string", "required": true},
+        {"name": "price", "type": "number", "required": true},
+        {"name": "quantity", "type": "number", "required": true}
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "Sale",
+      "target": "Customer",
+      "relationship": "belongsTo"
+    },
+    {
+      "source": "Sale",
+      "target": "ItemDB",
+      "relationship": "contains"
+    },
+    {
+      "source": "Refund",
+      "target": "Sale",
+      "relationship": "refunds"
+    },
+    {
+      "source": "Void",
+      "target": "Sale",
+      "relationship": "voids"
+    },
+    {
+      "source": "LoyaltyProgram",
+      "target": "Customer",
+      "relationship": "enrolledIn"
+    }
+  ],
+  "businessRules": [
+    {
+      "entity": "Sale",
+      "name": "applyLoyaltyDiscount",
+      "conditions": [
+        {"field": "customer.tier", "operator": "==", "value": "gold"}
+      ],
+      "actions": [
+        {"type": "discount", "value": 10}
+      ]
+    },
+    {
+      "entity": "Refund",
+      "name": "validateRefundDate",
+      "conditions": [
+        {"field": "refundDate", "operator": "<=", "value": "saleDate + 30 days"}
+      ],
+      "actions": [
+        {"type": "error", "message": "Refund not allowed after 30 days"}
+      ]
+    },
+    {
+      "entity": "Void",
+      "name": "preventVoidOnRefundedSale",
+      "conditions": [
+        {"field": "sale.refunded", "operator": "==", "value": true}
+      ],
+      "actions": [
+        {"type": "error", "message": "Cannot void a refunded sale"}
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "saleCompleted",
+      "entity": "Sale",
+      "fields": ["saleId", "customerId", "totalAmount"]
+    },
+    {
+      "name": "refundProcessed",
+      "entity": "Refund",
+      "fields": ["refundId", "saleId", "refundAmount"]
+    },
+    {
+      "name": "loyaltyPointsUpdated",
+      "entity": "LoyaltyProgram",
+      "fields": ["programId", "customerId", "points"]
+    }
+  ]
+}

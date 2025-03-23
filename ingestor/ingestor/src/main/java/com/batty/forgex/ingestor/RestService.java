@@ -50,4 +50,6 @@ public class RestService implements HikeListApi
 
         return ResponseEntity.ok(response);
     }
+
+
 }

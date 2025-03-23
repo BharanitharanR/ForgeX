@@ -32,3 +32,11 @@ framework/framework-registry/target/*
 framework/framework-scheduler/target/*
 
 /framework/framework-datastore/target
+.idea/compiler.xml
+.idea/encodings.xml
+.idea/jarRepositories.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/misc.xml
+.idea/modules.xml
+/.idea

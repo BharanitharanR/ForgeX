@@ -29,41 +29,36 @@ public class DatastoreImpl implements DatastoreInterface {
     {
         createIndex();
     }
-
-
-
     @Override
     public void createIndex() {
         try
         {
             Document index = new Document();
-            index.put("name",1);
+            index.put("ingestId",1);
             this.datastore.createIndex(index, this.utils.getOptions().unique(true));
             index.clear();
             index.put("lastModifiedTimeStamp",1);
-            this.datastore.createIndex(index, this.utils.getOptions().expireAfter(15L, TimeUnit.SECONDS));
+            /*    Set expiry so as to avoid space hold up in cloud db
+                 this.datastore.createIndex(index, this.utils.getOptions().expireAfter(15L, TimeUnit.SECONDS));
+             */
+            this.datastore.createIndex(index,this.utils.getOptions());
         }
         catch(Exception e)
         {
 
         }
     }
-
-    public boolean insertData(Document doc) {
-
+    public boolean insertData(Document doc)
+    {
         try
         {
-            // Document doc = new Document();
-            // doc.put("name",userId);
             return this.datastore.insertOne(doc) ;
         }
         catch(Exception e) {
             e.printStackTrace();
             return false;
         }
-
     }
-
     public ServiceCollection findUser(String userId)
     {
         Object status = null;
@@ -84,6 +79,5 @@ public class DatastoreImpl implements DatastoreInterface {
             status = "empty";
             return null;
         }
-
     }
 }
