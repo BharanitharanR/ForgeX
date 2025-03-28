@@ -35,7 +35,7 @@ public class DatastoreImpl implements DatastoreInterface {
         {
             Document index = new Document();
             index.put("ingestId",1);
-            this.datastore.createIndex(index, this.utils.getOptions().unique(true));
+            this.datastore.createIndex(index, this.utils.getOptions().unique(false));
             index.clear();
             index.put("lastModifiedTimeStamp",1);
             /*    Set expiry so as to avoid space hold up in cloud db

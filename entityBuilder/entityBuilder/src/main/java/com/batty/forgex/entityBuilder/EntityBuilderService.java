@@ -5,6 +5,8 @@ import com.batty.forgex.entityBuilder.datastore.DatastoreImpl;
 import com.batty.forgex.entityBuilder.model.InlineResponse200;
 import com.batty.forgex.entityBuilder.model.Node;
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -16,11 +18,14 @@ import java.util.List;
 @Component("EntityBuilderService")
 @RestController
 public class EntityBuilderService implements EntityApi {
+
+    protected Logger log = LoggerFactory.getLogger(EntityBuilderService.class);
     @Autowired
     protected DatastoreImpl dbConnection;
 
     @Override
     public ResponseEntity<InlineResponse200> entityProcessPost(List<Node> node) {
+        log.info("Inserting doc in entity builder...");
         org.bson.Document entityBuilderDocument =  new Document();
         entityBuilderDocument.put("data",node.toString());
         dbConnection.insertData(entityBuilderDocument);
