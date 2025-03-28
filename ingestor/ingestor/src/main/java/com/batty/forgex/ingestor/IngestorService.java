@@ -38,7 +38,6 @@ public class IngestorService implements GraphApi {
             dbConnection.insertData(graphInputDocument);
             ObjectMapper map = new ObjectMapper();
             String jsonString = map.writeValueAsString(graphInput.getNodes());
-
             entityBuilderActor.act(jsonString);
             return null;
         }
