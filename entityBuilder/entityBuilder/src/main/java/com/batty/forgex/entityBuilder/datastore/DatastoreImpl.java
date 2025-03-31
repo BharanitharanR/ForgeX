@@ -3,6 +3,7 @@ package com.batty.forgex.entityBuilder.datastore;
 
 import com.batty.forgex.framework.interfaces.DatastoreInterface;
 import com.batty.forgex.entityBuilder.model.ServiceCollection;
+import com.mongodb.client.result.InsertOneResult;
 import jakarta.annotation.PostConstruct;
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.batty.forgex.framework.datastore.DatabaseHandler;
 import com.batty.forgex.framework.datastore.DatastoreUtil;
+
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Component("ServiceDataStoreImpl")
@@ -34,8 +37,7 @@ public class DatastoreImpl implements DatastoreInterface {
         try
         {
             Document index = new Document();
-            index.put("ingestId",1);
-            this.datastore.createIndex(index, this.utils.getOptions().unique(false));
+            this.datastore.createIndex(index, this.utils.getOptions().unique(true));
             index.clear();
             index.put("lastModifiedTimeStamp",1);
             /*    Set expiry so as to avoid space hold up in cloud db
@@ -79,5 +81,19 @@ public class DatastoreImpl implements DatastoreInterface {
             status = "empty";
             return null;
         }
+    }
+
+    public Optional<InsertOneResult> insertDataResponse(Document doc)
+    {
+        Optional<InsertOneResult> response = null;
+        try
+        {
+            response = Optional.ofNullable(this.datastore.insertOneResponse(doc));
+            return response;
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+        }
+        return response;
     }
 }

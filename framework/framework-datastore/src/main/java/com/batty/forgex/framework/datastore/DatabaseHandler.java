@@ -1,5 +1,6 @@
 package com.batty.forgex.framework.datastore;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -120,6 +121,20 @@ public class DatabaseHandler {
         }
     }
 
+    public InsertOneResult insertOneResponse(Document doc)
+    {
+        InsertOneResult result = null;
+        try {
+            doc.append("lastModifiedTimeStamp", new Date());
+            result = this.collection.insertOne(doc);
+            log.info("is inserted:"+result.getInsertedId());
+            return result;
+        }
+        catch(Exception e)
+        {
+            throw new RuntimeException("insert failed");
+        }
+    }
     public boolean updateOne(Document query, Document doc)
     {
         boolean status = false;
@@ -181,5 +196,41 @@ public class DatabaseHandler {
         }
         return null;
     }
+
+    public <T> T findOneFromKey(Document doc, Class<T> clazz,String key) {
+        try {
+            Document response = (Document) this.collection.find(doc).first();
+            if (response != null) {
+                return objectMapper.readValue((String) response.get(key), clazz);
+            }
+        } catch (Exception e) {
+            log.info("find error: " + e);
+        }
+        return null;
+    }
+
+    public <T> T findByIdFromKey(Document doc, Class<T> clazz,String key) {
+        try {
+            Document response = (Document) this.collection.find(doc).first();
+            if (response != null) {
+                return objectMapper.readValue((String) response.get(key), clazz);
+            }
+        } catch (Exception e) {
+            log.info("find error: " + e);
+        }
+        return null;
+    }
+    public Document findOneRaw(Document doc) {
+        try {
+            Document response = (Document) this.collection.find(doc).first();
+            if (response != null) {
+                return response;
+            }
+        } catch (Exception e) {
+            log.info("find error: " + e);
+        }
+        return null;
+    }
+
 
 }

@@ -13,7 +13,7 @@ public class TaskRegistrationService<T> {
         @Autowired
         private TasksList<T> tasksList;
 
-        public void registerEntityBuilderActor(Task<T> task) {
+        public void registerTask(Task<T> task) {
             log.info("Registring {}",task.getName());
             tasksList.registerTask(task);
         }

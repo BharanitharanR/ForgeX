@@ -38,6 +38,65 @@ paths:
                   error:
                     type: string
                     example: "Invalid graph input"
+
+  /graph/{id}:
+    get:
+      summary: Retrieve graph by MongoDB ObjectId
+      description: Fetches the MongoDB document corresponding to the provided ObjectId.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The MongoDB ObjectId of the graph document to retrieve
+          schema:
+            type: string
+            example: "660a5a3e1f1bfc5e88b8d2d1"
+      responses:
+        '200':
+          description: Graph document retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "660a5a3e1f1bfc5e88b8d2d1"
+                  data:
+                    type: object
+                    example:
+                      name: "Sample Graph"
+                      nodes:
+                        - id: "1"
+                          label: "Node A"
+                        - id: "2"
+                          label: "Node B"
+                      edges:
+                        - source: "1"
+                          target: "2"
+                          label: "Edge AB"
+        '404':
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Document not found"
+        '400':
+          description: Invalid ObjectId format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid ObjectId format"
+
+
   /HikeList/user/{userID}:
     post:
       summary: Get the details of the specific user
