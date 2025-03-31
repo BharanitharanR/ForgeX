@@ -1,0 +1,170 @@
+{
+  "nodes": [
+    {
+      "type": "ENTITY",
+      "name": "Customer",
+      "fields": [
+        {"name": "customerId", "type": "string", "required": true},
+        {"name": "firstName", "type": "string", "required": true},
+        {"name": "lastName", "type": "string", "required": true},
+        {"name": "email", "type": "string", "required": true},
+        {"name": "phone", "type": "string", "required": false},
+        {"name": "address", "type": "string", "required": false},
+        {"name": "createdDate", "type": "date", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Lead",
+      "fields": [
+        {"name": "leadId", "type": "string", "required": true},
+        {"name": "customerId", "type": "string", "required": true},
+        {"name": "source", "type": "string", "required": true},
+        {"name": "status", "type": "string", "required": true},
+        {"name": "createdDate", "type": "date", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Opportunity",
+      "fields": [
+        {"name": "opportunityId", "type": "string", "required": true},
+        {"name": "leadId", "type": "string", "required": true},
+        {"name": "estimatedValue", "type": "number", "required": true},
+        {"name": "closeDate", "type": "date", "required": false},
+        {"name": "stage", "type": "string", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Deal",
+      "fields": [
+        {"name": "dealId", "type": "string", "required": true},
+        {"name": "opportunityId", "type": "string", "required": true},
+        {"name": "amount", "type": "number", "required": true},
+        {"name": "closeDate", "type": "date", "required": true},
+        {"name": "status", "type": "string", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Contact",
+      "fields": [
+        {"name": "contactId", "type": "string", "required": true},
+        {"name": "customerId", "type": "string", "required": true},
+        {"name": "name", "type": "string", "required": true},
+        {"name": "email", "type": "string", "required": true},
+        {"name": "phone", "type": "string", "required": false},
+        {"name": "role", "type": "string", "required": false}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Task",
+      "fields": [
+        {"name": "taskId", "type": "string", "required": true},
+        {"name": "assignedTo", "type": "string", "required": true},
+        {"name": "dueDate", "type": "date", "required": true},
+        {"name": "status", "type": "string", "required": true},
+        {"name": "description", "type": "string", "required": false}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Note",
+      "fields": [
+        {"name": "noteId", "type": "string", "required": true},
+        {"name": "customerId", "type": "string", "required": true},
+        {"name": "content", "type": "string", "required": true},
+        {"name": "createdDate", "type": "date", "required": true}
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "Lead",
+      "target": "Customer",
+      "relationship": "belongsTo"
+    },
+    {
+      "source": "Opportunity",
+      "target": "Lead",
+      "relationship": "linkedTo"
+    },
+    {
+      "source": "Deal",
+      "target": "Opportunity",
+      "relationship": "closes"
+    },
+    {
+      "source": "Contact",
+      "target": "Customer",
+      "relationship": "associatedWith"
+    },
+    {
+      "source": "Task",
+      "target": "Customer",
+      "relationship": "relatedTo"
+    },
+    {
+      "source": "Note",
+      "target": "Customer",
+      "relationship": "attachedTo"
+    }
+  ],
+  "businessRules": [
+    {
+      "entity": "Lead",
+      "name": "autoAssignSalesRep",
+      "conditions": [
+        {"field": "source", "operator": "==", "value": "web"}
+      ],
+      "actions": [
+        {"type": "assign", "target": "SalesTeam", "value": "repId"}
+      ]
+    },
+    {
+      "entity": "Opportunity",
+      "name": "autoMoveToDeal",
+      "conditions": [
+        {"field": "stage", "operator": "==", "value": "Closed Won"}
+      ],
+      "actions": [
+        {"type": "create", "target": "Deal", "fields": ["opportunityId", "estimatedValue", "closeDate"]}
+      ]
+    },
+    {
+      "entity": "Task",
+      "name": "overdueNotification",
+      "conditions": [
+        {"field": "dueDate", "operator": "<", "value": "now"},
+        {"field": "status", "operator": "!=", "value": "completed"}
+      ],
+      "actions": [
+        {"type": "notify", "target": "assignedTo", "message": "Task is overdue"}
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "leadCreated",
+      "entity": "Lead",
+      "fields": ["leadId", "customerId", "source", "status"]
+    },
+    {
+      "name": "opportunityUpdated",
+      "entity": "Opportunity",
+      "fields": ["opportunityId", "stage", "estimatedValue"]
+    },
+    {
+      "name": "dealClosed",
+      "entity": "Deal",
+      "fields": ["dealId", "opportunityId", "amount", "closeDate"]
+    },
+    {
+      "name": "taskAssigned",
+      "entity": "Task",
+      "fields": ["taskId", "assignedTo", "dueDate", "status"]
+    }
+  ]
+}

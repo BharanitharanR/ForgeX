@@ -8,6 +8,10 @@ VOLUME /tmp
 ARG JAR_FILE
 ARG JVM_VALUES
 
+# Ensure Maven is available for dynamic service creation
+RUN apk add --no-cache maven docker-cli docker-cli-buildx
+
+
 # Copy the JAR file into the container
 COPY ${JAR_FILE} /app.jar
 

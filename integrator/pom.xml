@@ -119,6 +119,13 @@
 										-DentityBuilder.service.hostname=http://entitybuilder-1:8082
 									</JVM_VALUES>
 								</env>
+								<volumes>
+									<bind>
+										<volume>
+											/var/run/docker.sock:/var/run/docker.sock
+										</volume>
+									</bind>
+								</volumes>
 								<dependsOn>mongodb</dependsOn>
 							</run>
 						</image>
