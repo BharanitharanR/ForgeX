@@ -8,6 +8,8 @@ import com.batty.forgex.ingestor.model.GraphInput;
 import com.batty.forgex.ingestor.model.InlineResponse200;
 import com.batty.forgex.ingestor.model.InlineResponse2001;
 import com.batty.forgex.ingestor.service.AsyncService;
+import com.batty.forgex.ingestor.serviceGenerator.OpenApiSpecBuilder;
+import com.batty.forgex.ingestor.serviceGenerator.OpenApiSpecGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.InsertOneResult;
 import org.bson.BsonObjectId;
@@ -25,6 +27,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
 
+@SuppressWarnings("unchecked")
 @Component("IngestorService")
 @RestController
 public class IngestorService implements GraphApi {
@@ -41,7 +44,7 @@ public class IngestorService implements GraphApi {
     ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
-    private PipelineService<String, String> pipelineService;
+    private PipelineService pipelineService;
 
     @Autowired
     protected AsyncService asyncService;
@@ -74,10 +77,9 @@ public class IngestorService implements GraphApi {
                         resp.set(((BsonObjectId) value.getInsertedId().asObjectId()).getValue().toHexString());
                     });
 
-            String jsonString = mapper.writeValueAsString(graphInput.getNodes());
+            String jsonString = mapper.writeValueAsString(graphInput);
 
-            // Task Pipeline
-            pipelineService.executeTasks(jsonString,String.class,resp.get());
+            pipelineService.executeTasks(graphInput,GraphInput.class,resp.get());
             // Response Builder
             InlineResponse200 response200 = new InlineResponse200();
             response200.setMessage(resp.get());

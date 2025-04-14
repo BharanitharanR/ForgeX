@@ -67,6 +67,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.batty.forgex</groupId>
+			<artifactId>framework-utils</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.batty.forgex</groupId>
 			<artifactId>framework-datastore</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
@@ -74,6 +79,17 @@
 			<groupId>com.batty.forgex</groupId>
 			<artifactId>framework-async</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations -->
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-annotations</artifactId>
+			<version>2.2.30</version>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-core</artifactId>
+			<version>2.2.30</version>
 		</dependency>
 		<!-- <dependency>
 			<groupId>javax.servlet</groupId>
@@ -127,6 +143,22 @@
 			<groupId>com.batty.forgex</groupId>
 			<artifactId>entity-sdk</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+        </dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-models</artifactId>
+			<version>2.2.19</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-models</artifactId>
+			<version>2.2.19</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<build>

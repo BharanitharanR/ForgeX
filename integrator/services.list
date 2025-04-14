@@ -1,4 +1,4 @@
 forgex/entitybuilder:0.0.1-SNAPSHOT
 forgex/ingestor-service:0.0.1-SNAPSHOT
-forgex/posservice:latest
 forgex/integrator:0.0.1-SNAPSHOT
+forgex/posservice:latest

@@ -62,6 +62,22 @@
 			<artifactId>docker-maven-plugin</artifactId>
 			<version>0.43.4</version>
 		</dependency>
+		<!-- Openapi spec generatot -->
+		<dependency>
+			<groupId>io.swagger.core.v3</groupId>
+			<artifactId>swagger-models</artifactId>
+			<version>2.2.8</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.13.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-yaml</artifactId>
+			<version>2.13.3</version>
+		</dependency>
 	</dependencies>
 	<modules>
 		<module>ingestor-client</module>

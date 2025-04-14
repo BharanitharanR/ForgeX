@@ -1,5 +1,6 @@
 com/batty/forgex/framework/tasks/TasksList.class
 com/batty/forgex/framework/pipeline/PipelineService.class
+com/batty/forgex/framework/serializer/JacksonConfig.class
 com/batty/forgex/framework/ServiceApplication.class
 com/batty/forgex/framework/tasks/Task.class
 com/batty/forgex/framework/tasks/TaskRegistrationService.class

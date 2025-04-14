@@ -14,11 +14,14 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/Node'
+              type: object
+              properties:
+                message:
+                  type: string
+                  format: binary
+                  example: "Entities processed successfully"
       responses:
         '200':
           description: Entities processed successfully

@@ -21,7 +21,7 @@ public class PipelineService<T,U> {
     public TasksList<T> tasksList;
 
     private Object obj;          // Store the object of any type
-    private Class<?> objType;    // Store the object's type
+/*    private Class<?> objType;    // Store the object's type
 
     public <U> void setObject(U obj, Class<U> type) {
         this.obj = obj;          // Store the object
@@ -35,7 +35,7 @@ public class PipelineService<T,U> {
         } else {
             throw new ClassCastException("Cannot cast " + (obj != null ? obj.getClass() : "null") + " to " + type);
         }
-    }
+    }*/
 
     public void executeTasks(U obj, Class<U> type,String id) {
         List<Task<T>> tasks = tasksList.getTasks();
@@ -43,11 +43,6 @@ public class PipelineService<T,U> {
         // Execute all tasks asynchronously
         List<CompletableFuture<?>> futures = tasks.parallelStream()
                 .map(task -> CompletableFuture.runAsync(() -> {
-                    try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
                     task.setObject(obj,type);
                     task.setParentId(id);
                     task.execute(); })) // Call execute asynchronously

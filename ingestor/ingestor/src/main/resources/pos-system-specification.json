@@ -1,792 +1,163 @@
 {
-  "serviceDefinition": {
-    "name": "retail-pos-service",
-    "description": "Point of Sale system for retail stores",
-    "version": "1.0.0",
-    "tags": ["retail", "pos", "sales", "inventory"],
-    "ownerInfo": {
-      "team": "Retail Solutions",
-      "contact": "retail-team@example.com"
-    }
-  },
-  "dataModel": {
-    "collections": [
-      {
-        "name": "products",
-        "description": "Inventory of products available for sale",
-        "fields": [
-          {
-            "name": "productId",
-            "type": "string",
-            "description": "Unique identifier for product",
-            "required": true,
-            "unique": true,
-            "indexed": true
-          },
-          {
-            "name": "name",
-            "type": "string",
-            "description": "Product name",
-            "required": true,
-            "indexed": true
-          },
-          {
-            "name": "description",
-            "type": "string",
-            "required": false
-          },
-          {
-            "name": "category",
-            "type": "string",
-            "description": "Product category",
-            "required": true,
-            "indexed": true
-          },
-          {
-            "name": "price",
-            "type": "decimal",
-            "description": "Base price of product",
-            "required": true
-          },
-          {
-            "name": "cost",
-            "type": "decimal",
-            "description": "Cost of product",
-            "required": true
-          },
-          {
-            "name": "stockQuantity",
-            "type": "integer",
-            "description": "Current stock level",
-            "required": true,
-            "defaultValue": 0
-          },
-          {
-            "name": "reorderThreshold",
-            "type": "integer",
-            "description": "Quantity at which to reorder",
-            "required": true,
-            "defaultValue": 5
-          },
-          {
-            "name": "barcodes",
-            "type": "array",
-            "description": "List of valid barcodes for this product",
-            "required": false
-          },
-          {
-            "name": "taxRate",
-            "type": "decimal",
-            "description": "Applicable tax rate",
-            "required": true,
-            "defaultValue": 0.0
-          },
-          {
-            "name": "isActive",
-            "type": "boolean",
-            "description": "Whether product is available for sale",
-            "required": true,
-            "defaultValue": true
-          }
-        ],
-        "indexes": [
-          {
-            "name": "product_search",
-            "fields": ["name", "category"],
-            "unique": false
-          },
-          {
-            "name": "barcode_lookup",
-            "fields": ["barcodes"],
-            "unique": false
-          }
-        ]
-      },
-      {
-        "name": "customers",
-        "description": "Customer information",
-        "fields": [
-          {
-            "name": "customerId",
-            "type": "string",
-            "description": "Unique identifier for customer",
-            "required": true,
-            "unique": true,
-            "indexed": true
-          },
-          {
-            "name": "firstName",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "lastName",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "email",
-            "type": "string",
-            "required": false,
-            "validation": {
-              "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
-            }
-          },
-          {
-            "name": "phone",
-            "type": "string",
-            "required": false
-          },
-          {
-            "name": "loyaltyPoints",
-            "type": "integer",
-            "defaultValue": 0
-          },
-          {
-            "name": "membershipLevel",
-            "type": "string",
-            "defaultValue": "standard",
-            "validation": {
-              "enum": ["standard", "silver", "gold", "platinum"]
-            }
-          }
-        ],
-        "indexes": [
-          {
-            "name": "customer_search",
-            "fields": ["lastName", "email", "phone"],
-            "unique": false
-          }
-        ]
-      },
-      {
-        "name": "transactions",
-        "description": "Sales transactions",
-        "fields": [
-          {
-            "name": "transactionId",
-            "type": "string",
-            "description": "Unique identifier for transaction",
-            "required": true,
-            "unique": true,
-            "indexed": true
-          },
-          {
-            "name": "customerId",
-            "type": "string",
-            "required": false,
-            "indexed": true,
-            "references": {
-              "collection": "customers",
-              "field": "customerId",
-              "onDelete": "null"
-            }
-          },
-          {
-            "name": "employeeId",
-            "type": "string",
-            "required": true,
-            "indexed": true
-          },
-          {
-            "name": "timestamp",
-            "type": "date",
-            "required": true,
-            "indexed": true
-          },
-          {
-            "name": "items",
-            "type": "array",
-            "description": "Products purchased in this transaction",
-            "required": true,
-            "validation": {
-              "minLength": 1
-            }
-          },
-          {
-            "name": "subtotal",
-            "type": "decimal",
-            "required": true
-          },
-          {
-            "name": "taxAmount",
-            "type": "decimal",
-            "required": true
-          },
-          {
-            "name": "discountAmount",
-            "type": "decimal",
-            "required": true,
-            "defaultValue": 0.0
-          },
-          {
-            "name": "total",
-            "type": "decimal",
-            "required": true
-          },
-          {
-            "name": "paymentMethod",
-            "type": "string",
-            "required": true,
-            "validation": {
-              "enum": ["cash", "credit", "debit", "gift_card", "loyalty_points", "mobile_payment"]
-            }
-          },
-          {
-            "name": "paymentStatus",
-            "type": "string",
-            "required": true,
-            "defaultValue": "pending",
-            "validation": {
-              "enum": ["pending", "completed", "failed", "refunded", "partially_refunded"]
-            }
-          },
-          {
-            "name": "receiptNumber",
-            "type": "string",
-            "required": true,
-            "unique": true
-          }
-        ],
-        "indexes": [
-          {
-            "name": "transaction_search",
-            "fields": ["timestamp", "customerId", "employeeId"],
-            "unique": false
-          }
-        ]
-      },
-      {
-        "name": "discounts",
-        "description": "Discount configurations",
-        "fields": [
-          {
-            "name": "discountId",
-            "type": "string",
-            "required": true,
-            "unique": true,
-            "indexed": true
-          },
-          {
-            "name": "name",
-            "type": "string",
-            "required": true
-          },
-          {
-            "name": "description",
-            "type": "string",
-            "required": false
-          },
-          {
-            "name": "type",
-            "type": "string",
-            "required": true,
-            "validation": {
-              "enum": ["percentage", "fixed_amount", "buy_x_get_y"]
-            }
-          },
-          {
-            "name": "value",
-            "type": "decimal",
-            "required": true
-          },
-          {
-            "name": "appliesTo",
-            "type": "string",
-            "required": true,
-            "validation": {
-              "enum": ["product", "category", "order", "customer_level"]
-            }
-          },
-          {
-            "name": "targetId",
-            "type": "string",
-            "required": false,
-            "description": "Product ID, category ID, or membership level this applies to"
-          },
-          {
-            "name": "minPurchaseAmount",
-            "type": "decimal",
-            "required": false
-          },
-          {
-            "name": "startDate",
-            "type": "date",
-            "required": true
-          },
-          {
-            "name": "endDate",
-            "type": "date",
-            "required": true
-          },
-          {
-            "name": "isActive",
-            "type": "boolean",
-            "required": true,
-            "defaultValue": true
-          }
-        ]
-      }
-    ],
-    "relationships": [
-      {
-        "type": "one-to-many",
-        "source": {
-          "collection": "customers",
-          "field": "customerId"
-        },
-        "target": {
-          "collection": "transactions",
-          "field": "customerId"
-        }
-      }
-    ]
-  },
-  "businessRules": {
-    "droolsRules": [
-      {
-        "name": "ApplyMembershipDiscount",
-        "description": "Applies appropriate discount based on customer membership level",
-        "ruleContent": "rule \"Gold Member Discount\"\nwhen\n  $customer: Customer(membershipLevel == \"gold\")\n  $transaction: Transaction(customerId == $customer.customerId)\nthen\n  $transaction.discountAmount = $transaction.subtotal * 0.05;\nend\n\nrule \"Platinum Member Discount\"\nwhen\n  $customer: Customer(membershipLevel == \"platinum\")\n  $transaction: Transaction(customerId == $customer.customerId)\nthen\n  $transaction.discountAmount = $transaction.subtotal * 0.10;\nend",
-        "priority": 1,
-        "active": true,
-        "appliesTo": ["transactions"]
-      },
-      {
-        "name": "LowInventoryAlert",
-        "description": "Triggers reorder notification when inventory is low",
-        "ruleContent": "rule \"Low Inventory Alert\"\nwhen\n  $product: Product(stockQuantity <= reorderThreshold)\nthen\n  publishEvent(\"inventory.reorder.needed\", $product);\nend",
-        "priority": 2,
-        "active": true,
-        "appliesTo": ["products"]
-      },
-      {
-        "name": "BuyXGetYFree",
-        "description": "Buy X items get Y free promotion",
-        "ruleContent": "rule \"Buy 2 Get 1 Free Electronics\"\nwhen\n  $transaction: Transaction()\n  $items: List() from collect(Item(category == \"electronics\") from $transaction.items)\n  eval($items.size() >= 3)\nthen\n  applyPromotion($transaction, \"BUY2GET1FREE\", $items);\nend",
-        "priority": 3,
-        "active": true,
-        "appliesTo": ["transactions"]
-      }
-    ],
-    "workflows": [
-      {
-        "name": "SalesCheckoutProcess",
-        "description": "Process for completing a sale transaction",
-        "trigger": {
-          "type": "api_call",
-          "event": "initiate_checkout",
-          "condition": ""
-        },
-        "steps": [
-          {
-            "id": "validate_inventory",
-            "type": "business_logic",
-            "name": "Validate Inventory",
-            "description": "Check if all items in cart are in stock",
-            "action": "validateInventoryLevels",
-            "parameters": {},
-            "nextStep": "calculate_total",
-            "condition": ""
-          },
-          {
-            "id": "calculate_total",
-            "type": "business_logic",
-            "name": "Calculate Total",
-            "description": "Calculate subtotal, taxes, and apply discounts",
-            "action": "calculateOrderTotal",
-            "parameters": {},
-            "nextStep": "process_payment",
-            "condition": ""
-          },
-          {
-            "id": "process_payment",
-            "type": "business_logic",
-            "name": "Process Payment",
-            "description": "Process payment method specified by customer",
-            "action": "processPayment",
-            "parameters": {},
-            "nextStep": "update_inventory",
-            "condition": "payment_successful"
-          },
-          {
-            "id": "update_inventory",
-            "type": "business_logic",
-            "name": "Update Inventory",
-            "description": "Reduce inventory levels based on items sold",
-            "action": "updateInventory",
-            "parameters": {},
-            "nextStep": "update_loyalty",
-            "condition": ""
-          },
-          {
-            "id": "update_loyalty",
-            "type": "business_logic",
-            "name": "Update Loyalty",
-            "description": "Update customer loyalty points based on purchase",
-            "action": "updateLoyaltyPoints",
-            "parameters": {},
-            "nextStep": "generate_receipt",
-            "condition": "customer_exists"
-          },
-          {
-            "id": "generate_receipt",
-            "type": "business_logic",
-            "name": "Generate Receipt",
-            "description": "Generate and store receipt, send to customer if requested",
-            "action": "generateReceipt",
-            "parameters": {},
-            "nextStep": "",
-            "condition": ""
-          }
-        ]
-      }
-    ]
-  },
-  "apis": {
-    "endpoints": [
-      {
-        "path": "/api/products",
-        "method": "GET",
-        "description": "Get list of products with optional filtering",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "parameters": [
-          {
-            "name": "category",
-            "location": "query",
-            "type": "string",
-            "required": false,
-            "description": "Filter by product category"
-          },
-          {
-            "name": "search",
-            "location": "query",
-            "type": "string",
-            "required": false,
-            "description": "Search term for product name"
-          },
-          {
-            "name": "inStock",
-            "location": "query",
-            "type": "boolean",
-            "required": false,
-            "description": "Filter to only in-stock items"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "List of products",
-            "schema": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "productId": { "type": "string" },
-                  "name": { "type": "string" },
-                  "price": { "type": "number" },
-                  "category": { "type": "string" },
-                  "stockQuantity": { "type": "integer" }
-                }
-              }
-            }
-          }
-        },
-        "security": ["employee"],
-        "businessLogic": {
-          "type": "query",
-          "implementation": "db.products.find(buildQueryFromParams(req.query))",
-          "usesCollections": ["products"]
-        }
-      },
-      {
-        "path": "/api/transactions",
-        "method": "POST",
-        "description": "Create a new sales transaction",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "parameters": [
-          {
-            "name": "body",
-            "location": "body",
-            "type": "object",
-            "required": true,
-            "description": "Transaction details",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "customerId": { "type": "string" },
-                "items": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "productId": { "type": "string" },
-                      "quantity": { "type": "integer" },
-                      "price": { "type": "number" }
-                    }
-                  }
-                },
-                "paymentMethod": { "type": "string" }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Transaction created successfully",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "transactionId": { "type": "string" },
-                "timestamp": { "type": "string" },
-                "total": { "type": "number" },
-                "receiptNumber": { "type": "string" }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request"
-          }
-        },
-        "security": ["cashier"],
-        "businessLogic": {
-          "type": "workflow",
-          "implementation": "SalesCheckoutProcess",
-          "dependencies": ["validateInventoryLevels", "calculateOrderTotal", "processPayment"],
-          "usesCollections": ["products", "transactions", "customers"],
-          "usesRules": ["ApplyMembershipDiscount", "BuyXGetYFree"],
-          "publishesEvents": ["transaction.completed", "inventory.updated"]
-        }
-      },
-      {
-        "path": "/api/products/{productId}/inventory",
-        "method": "PUT",
-        "description": "Update product inventory",
-        "consumes": ["application/json"],
-        "produces": ["application/json"],
-        "parameters": [
-          {
-            "name": "productId",
-            "location": "path",
-            "type": "string",
-            "required": true,
-            "description": "Product ID"
-          },
-          {
-            "name": "body",
-            "location": "body",
-            "type": "object",
-            "required": true,
-            "description": "Inventory update",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "quantity": { "type": "integer" },
-                "operation": { "type": "string", "enum": ["set", "add", "subtract"] },
-                "reason": { "type": "string" }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Inventory updated successfully"
-          },
-          "404": {
-            "description": "Product not found"
-          }
-        },
-        "security": ["manager"],
-        "businessLogic": {
-          "type": "function",
-          "implementation": "updateProductInventory(req.params.productId, req.body)",
-          "usesCollections": ["products"],
-          "publishesEvents": ["inventory.updated"]
-        }
-      }
-    ],
-    "security": {
-      "authenticationMethods": ["jwt"],
-      "roles": [
-        {
-          "name": "cashier",
-          "permissions": ["products.read", "transactions.create", "customers.read"]
-        },
-        {
-          "name": "manager",
-          "permissions": ["products.read", "products.update", "transactions.read", "transactions.void", "customers.read", "customers.update", "reports.read"]
-        },
-        {
-          "name": "admin",
-          "permissions": ["products.*", "transactions.*", "customers.*", "discounts.*", "reports.*", "users.*"]
-        }
+  "nodes": [
+    {
+      "type": "ENTITY",
+      "name": "Product",
+      "fields": [
+        {"name": "productId", "type": "string", "required": true, "create": true},
+        {"name": "name", "type": "string", "required": true},
+        {"name": "description", "type": "string", "required": false},
+        {"name": "price", "type": "number", "required": true},
+        {"name": "category", "type": "string", "required": false},
+        {"name": "createdDate", "type": "date", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Customer",
+      "fields": [
+        {"name": "customerId", "type": "string", "required": true, "create": true},
+        {"name": "name", "type": "string", "required": true},
+        {"name": "email", "type": "string", "required": false},
+        {"name": "phone", "type": "string", "required": false},
+        {"name": "loyaltyPoints", "type": "number", "required": false},
+        {"name": "createdDate", "type": "date", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Order",
+      "fields": [
+        {"name": "orderId", "type": "string", "required": true, "create": true},
+        {"name": "customerId", "type": "string", "required": false},
+        {"name": "orderDate", "type": "date", "required": true},
+        {"name": "status", "type": "string", "required": true},
+        {"name": "totalAmount", "type": "number", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "OrderItem",
+      "fields": [
+        {"name": "orderItemId", "type": "string", "required": true, "create": true},
+        {"name": "orderId", "type": "string", "required": true},
+        {"name": "productId", "type": "string", "required": true},
+        {"name": "quantity", "type": "number", "required": true},
+        {"name": "unitPrice", "type": "number", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Payment",
+      "fields": [
+        {"name": "paymentId", "type": "string", "required": true, "create": true},
+        {"name": "orderId", "type": "string", "required": true},
+        {"name": "amount", "type": "number", "required": true},
+        {"name": "paymentMethod", "type": "string", "required": true},
+        {"name": "paymentDate", "type": "date", "required": true},
+        {"name": "status", "type": "string", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Inventory",
+      "fields": [
+        {"name": "inventoryId", "type": "string", "required": true, "create": true},
+        {"name": "productId", "type": "string", "required": true},
+        {"name": "stock", "type": "number", "required": true},
+        {"name": "lastUpdated", "type": "date", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Employee",
+      "fields": [
+        {"name": "employeeId", "type": "string", "required": true, "create": true},
+        {"name": "name", "type": "string", "required": true},
+        {"name": "role", "type": "string", "required": true},
+        {"name": "email", "type": "string", "required": true},
+        {"name": "phone", "type": "string", "required": false},
+        {"name": "joinedDate", "type": "date", "required": true}
       ]
     }
-  },
-  "messagingSystem": {
-    "topics": [
-      {
-        "name": "pos.transactions",
-        "description": "All transaction events",
-        "schema": {
-          "type": "object",
-          "properties": {
-            "transactionId": { "type": "string" },
-            "timestamp": { "type": "string" },
-            "type": { "type": "string" },
-            "data": { "type": "object" }
-          }
-        },
-        "partitioning": "transactionId",
-        "retention": "7d"
-      },
-      {
-        "name": "pos.inventory",
-        "description": "Inventory change events",
-        "schema": {
-          "type": "object",
-          "properties": {
-            "productId": { "type": "string" },
-            "timestamp": { "type": "string" },
-            "oldQuantity": { "type": "integer" },
-            "newQuantity": { "type": "integer" },
-            "reason": { "type": "string" }
-          }
-        },
-        "partitioning": "productId",
-        "retention": "30d"
-      }
-    ],
-    "events": [
-      {
-        "name": "transaction.completed",
-        "description": "A sales transaction has been completed",
-        "trigger": {
-          "condition": "transaction.paymentStatus == 'completed'",
-          "source": "transactions"
-        },
-        "payload": {
-          "transactionId": "transaction.transactionId",
-          "timestamp": "transaction.timestamp",
-          "customerId": "transaction.customerId",
-          "total": "transaction.total",
-          "items": "transaction.items",
-          "type": "'sale'"
-        },
-        "destination": {
-          "topic": "pos.transactions"
-        }
-      },
-      {
-        "name": "inventory.updated",
-        "description": "Product inventory has been updated",
-        "trigger": {
-          "condition": "product.stockQuantity != oldStockQuantity",
-          "source": "products"
-        },
-        "payload": {
-          "productId": "product.productId",
-          "timestamp": "now()",
-          "oldQuantity": "oldStockQuantity",
-          "newQuantity": "product.stockQuantity",
-          "reason": "context.reason || 'system'"
-        },
-        "destination": {
-          "topic": "pos.inventory"
-        }
-      },
-      {
-        "name": "inventory.reorder.needed",
-        "description": "Product inventory is below reorder threshold",
-        "trigger": {
-          "condition": "product.stockQuantity <= product.reorderThreshold",
-          "source": "products"
-        },
-        "payload": {
-          "productId": "product.productId",
-          "productName": "product.name",
-          "currentQuantity": "product.stockQuantity",
-          "reorderThreshold": "product.reorderThreshold",
-          "timestamp": "now()"
-        },
-        "destination": {
-          "topic": "pos.inventory"
-        }
-      }
-    ],
-    "subscribers": [
-      {
-        "topic": "pos.transactions",
-        "service": "reporting-service",
-        "handler": "updateSalesReports",
-        "filter": "event.type == 'sale'"
-      },
-      {
-        "topic": "pos.inventory",
-        "service": "inventory-service",
-        "handler": "processInventoryEvent",
-        "filter": ""
-      },
-      {
-        "topic": "pos.inventory",
-        "service": "notification-service",
-        "handler": "sendLowStockAlert",
-        "filter": "event.newQuantity <= event.reorderThreshold"
-      }
-    ]
-  },
-  "deployment": {
-    "resources": {
-      "cpu": "1",
-      "memory": "1Gi",
-      "storage": "10Gi"
+  ],
+  "edges": [
+    {
+      "source": "Order",
+      "target": "Customer",
+      "relationship": "placedBy"
     },
-    "scaling": {
-      "minInstances": 2,
-      "maxInstances": 5,
-      "metrics": [
-        {
-          "type": "cpu",
-          "threshold": 70
-        },
-        {
-          "type": "concurrentRequests",
-          "threshold": 100
-        }
+    {
+      "source": "OrderItem",
+      "target": "Order",
+      "relationship": "partOf"
+    },
+    {
+      "source": "OrderItem",
+      "target": "Product",
+      "relationship": "references"
+    },
+    {
+      "source": "Payment",
+      "target": "Order",
+      "relationship": "paysFor"
+    },
+    {
+      "source": "Inventory",
+      "target": "Product",
+      "relationship": "tracks"
+    }
+  ],
+  "businessRules": [
+    {
+      "entity": "Inventory",
+      "name": "lowStockAlert",
+      "conditions": [
+        {"field": "stock", "operator": "<", "value": 5}
+      ],
+      "actions": [
+        {"type": "notify", "target": "employeeId", "message": "Low stock warning for product"}
       ]
     },
-    "networking": {
-      "ingressPorts": [8080],
-      "egressRules": [
-        {
-          "destination": "mongodb-service",
-          "port": 27017,
-          "protocol": "tcp"
-        },
-        {
-          "destination": "kafka-service",
-          "port": 9092,
-          "protocol": "tcp"
-        }
+    {
+      "entity": "OrderItem",
+      "name": "autoCalculateTotal",
+      "conditions": [],
+      "actions": [
+        {"type": "calculate", "target": "Order", "formula": "SUM(OrderItem.quantity * OrderItem.unitPrice)"}
       ]
     },
-    "dependencies": [
-      {
-        "name": "mongodb",
-        "version": "4.4",
-        "type": "database"
-      },
-      {
-        "name": "kafka",
-        "version": "2.8",
-        "type": "messaging"
-      },
-      {
-        "name": "drools",
-        "version": "7.59",
-        "type": "rules-engine"
-      }
-    ]
-  }
+    {
+      "entity": "Payment",
+      "name": "autoUpdateOrderStatus",
+      "conditions": [
+        {"field": "status", "operator": "==", "value": "Completed"}
+      ],
+      "actions": [
+        {"type": "update", "target": "Order", "field": "status", "value": "Paid"}
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "orderCreated",
+      "entity": "Order",
+      "fields": ["orderId", "customerId", "orderDate", "status"]
+    },
+    {
+      "name": "paymentProcessed",
+      "entity": "Payment",
+      "fields": ["paymentId", "orderId", "amount", "status"]
+    },
+    {
+      "name": "inventoryUpdated",
+      "entity": "Inventory",
+      "fields": ["inventoryId", "productId", "stock"]
+    },
+    {
+      "name": "employeeJoined",
+      "entity": "Employee",
+      "fields": ["employeeId", "name", "role", "joinedDate"]
+    }
+  ]
 }

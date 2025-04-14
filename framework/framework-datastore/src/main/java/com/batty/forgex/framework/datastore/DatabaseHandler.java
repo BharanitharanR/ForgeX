@@ -20,6 +20,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import org.bson.conversions.Bson;
 
+import javax.print.Doc;
 import java.util.Date;
 import java.util.List;
 
@@ -135,7 +136,11 @@ public class DatabaseHandler {
             throw new RuntimeException("insert failed");
         }
     }
-    public boolean updateOne(Document query, Document doc)
+
+
+
+
+    public UpdateResult  updateOne(Document query, Document doc)
     {
         boolean status = false;
         UpdateResult result = null;
@@ -143,20 +148,14 @@ public class DatabaseHandler {
         UpdateOptions updateOptions = new UpdateOptions().upsert(true);
         try
         {
-            result = this.collection.updateOne(query, doc, updateOptions);
-            if(result.getModifiedCount() >= 1 ) { status = true; }
-            log.info("is inserted:"+result.getUpsertedId());
+           return this.collection.updateOne(query, doc, updateOptions);
         }
-        catch(Exception ignored)
+        catch(Exception e)
         {
-            log.info("update failed:"+ignored);
-            status = false;
-        }
-        finally
-        {
-            return status;
+            throw new RuntimeException("Update failed ".concat(e.getMessage()));
         }
     }
+
     public Long removeOne(Bson doc) {
         Long response = 0L;
         try {
@@ -168,7 +167,7 @@ public class DatabaseHandler {
     }
 
 
-    public Object findOne(Document doc)
+    public Document findOne(Document doc)
     {
         Document response = null;
         try
@@ -178,10 +177,10 @@ public class DatabaseHandler {
                 System.out.println("_id: " + response.getObjectId("_id")
                         + ", name: " + response.getString("userId"));
             }
+            return response;
         } catch(Exception e) {
             log.info("find error :"+e);
-        } finally {
-            return response;
+            throw new RuntimeException("Invalid data");
         }
     }
 
@@ -231,6 +230,7 @@ public class DatabaseHandler {
         }
         return null;
     }
+
 
 
 }

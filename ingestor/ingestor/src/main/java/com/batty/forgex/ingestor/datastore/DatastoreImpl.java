@@ -5,6 +5,7 @@ import com.batty.forgex.framework.interfaces.DatastoreInterface;
 import com.batty.forgex.ingestor.model.GraphInput;
 import com.batty.forgex.ingestor.model.ServiceCollection;
 import com.mongodb.client.result.InsertOneResult;
+import com.mongodb.client.result.UpdateResult;
 import jakarta.annotation.PostConstruct;
 import org.bson.BsonString;
 import org.bson.BsonValue;
@@ -122,4 +123,36 @@ public class DatastoreImpl implements DatastoreInterface {
             return null;
         }
     }
+
+    public Document findOne(Document query)
+    {
+        Document status = new Document();
+        try
+        {
+            status = this.datastore.findOne(query);
+            log.info("data {}",status);
+            return status;
+
+        }
+        catch(Exception e)
+        {
+            log.info("Error while fetch"+ e);
+
+            return null;
+        }
+    }
+
+    public UpdateResult updateRecord(Document query,Document update)
+    {
+        try
+        {
+            return this.datastore.updateOne(query,update);
+        }
+        catch(Exception e)
+        {
+            log.info("Error while fetch"+ e);
+            return null;
+        }
+    }
+
 }
