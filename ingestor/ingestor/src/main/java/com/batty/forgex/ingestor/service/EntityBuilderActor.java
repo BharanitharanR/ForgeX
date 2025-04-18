@@ -6,7 +6,7 @@ import com.batty.forgex.entityBuilder.api.model.InlineResponse200;
 import com.batty.forgex.framework.tasks.Task;
 import com.batty.forgex.framework.tasks.TaskRegistrationService;
 import com.batty.forgex.framework.utils.FolderZipper;
-import com.batty.forgex.ingestor.datastore.DatastoreImpl;
+import com.batty.forgex.ingestor.datastore.GraphInputDatastoreImpl;
 import com.batty.forgex.ingestor.model.GraphInput;
 
 import com.batty.forgex.ingestor.pojo.MicroserviceRequest;
@@ -43,7 +43,7 @@ public class EntityBuilderActor implements Task<InlineResponse200> {
     protected Executor forgexAsyncExecutor;
 
     @Autowired
-    protected DatastoreImpl dbConnection;
+    protected GraphInputDatastoreImpl dbConnection;
 
     @Autowired
     protected FolderZipper zipper;
@@ -142,21 +142,24 @@ public class EntityBuilderActor implements Task<InlineResponse200> {
 
 
                 DefaultApi entityBuilderSDK = new DefaultApi();
-                InlineResponse200 response = entityBuilderSDK.entityProcessPost(new File(String.valueOf(Path.of("/tmp/openapiSpec/"+getParentId()+".zip"))));
+                InlineResponse200 response = entityBuilderSDK.entityProcessPostWithHttpInfo(new File(String.valueOf(Path.of("/tmp/openapiSpec/"+getParentId()+".zip")))).getData();
+                // InlineResponse200 response = entityBuilderSDK.entityProcessPost(new File(String.valueOf(Path.of("/tmp/openapiSpec/"+getParentId()+".zip"))));
 
 
                 Document query = new Document();
                 ObjectId obj = new ObjectId(getParentId());
                 query.put("_id",obj);
-                Document doc = dbConnection.findOne(query);
-                if(!doc.isEmpty())
+                if(dbConnection.findOne(query).isPresent())
+                    dbConnection.updateRecord(query,new Document("$set",new Document("status.entityReqId",response.getMessage())));
+
+        /*                if(!doc.isEmpty())
                 {
                     // Only atomic updates allowed
                     if( dbConnection.updateRecord(query,new Document("$set",new Document("status.entityReqId",response.getMessage()))).getModifiedCount() < 1 )
                     {
                         log.error("status update failed");
                     }
-                }
+                }*/
 
                 log.info("Task completed successfully: {} {}",getParentId(), response);
                 return null;

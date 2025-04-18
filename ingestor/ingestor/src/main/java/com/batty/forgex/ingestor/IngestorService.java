@@ -3,13 +3,11 @@ package com.batty.forgex.ingestor;
 
 import com.batty.forgex.framework.pipeline.PipelineService;
 import com.batty.forgex.ingestor.api.GraphApi;
-import com.batty.forgex.ingestor.datastore.DatastoreImpl;
+import com.batty.forgex.ingestor.datastore.GraphInputDatastoreImpl;
 import com.batty.forgex.ingestor.model.GraphInput;
 import com.batty.forgex.ingestor.model.InlineResponse200;
 import com.batty.forgex.ingestor.model.InlineResponse2001;
 import com.batty.forgex.ingestor.service.AsyncService;
-import com.batty.forgex.ingestor.serviceGenerator.OpenApiSpecBuilder;
-import com.batty.forgex.ingestor.serviceGenerator.OpenApiSpecGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.InsertOneResult;
 import org.bson.BsonObjectId;
@@ -22,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -34,7 +31,7 @@ public class IngestorService implements GraphApi {
 
     protected Logger log = LoggerFactory.getLogger(IngestorService.class);
     @Autowired
-    protected DatastoreImpl dbConnection;
+    protected GraphInputDatastoreImpl dbConnection;
 
 /*    @Autowired
     protected Task entityBuilderActor;*/
@@ -69,7 +66,7 @@ public class IngestorService implements GraphApi {
             Document graphInputDocument = new Document();
             String json = mapper.writeValueAsString(graphInput);
             graphInputDocument.put("data", json);
-            responseData  = dbConnection.insertDataResponse(graphInputDocument);
+            responseData  = dbConnection.insertDataResponse(graphInput);
             AtomicReference<String> resp =new AtomicReference<>();
             responseData.ifPresent(
                     (value) ->

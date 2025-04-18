@@ -1,4 +1,4 @@
-package com.batty.forgex.framework.interfaces;
+package com.batty.forgex.framework.datastore.interfaces;
 
 import org.springframework.stereotype.Component;
 
