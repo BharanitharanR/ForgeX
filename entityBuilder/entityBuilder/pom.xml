@@ -19,6 +19,7 @@
 		<java.version>21</java.version>
 		<project.id>ingestor</project.id>
 		<JAR_FILE>${project.basedir}/target/${artifactId}-${version}.jar</JAR_FILE>
+		<DEPENDENCY>${project.basedir}/target</DEPENDENCY>
 		<docker.repo>entitybuilder</docker.repo>
 		<docker.image.tag>${version}</docker.image.tag>
 		<springfox.version>2.9.2</springfox.version>
@@ -118,9 +119,59 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>4.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.batty.forgex</groupId>
+			<artifactId>framework-utils</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.batty.forgex</groupId>
+			<artifactId>framework-async</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.spullara.mustache.java</groupId>
+			<artifactId>compiler</artifactId>
+			<version>0.9.10</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+					<execution>
+						<id>copy-parent-pom</id>
+						<phase>generate-resources</phase>
+						<configuration>
+							<target>
+								<copy file="../../framework/pom.xml" tofile="${DEPENDENCY}/dependency/forgex-parent-1.0.0.pom" />
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.6.0</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>

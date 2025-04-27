@@ -21,21 +21,6 @@ public class PipelineService<T,U> {
     public TasksList<T> tasksList;
 
     private Object obj;          // Store the object of any type
-/*    private Class<?> objType;    // Store the object's type
-
-    public <U> void setObject(U obj, Class<U> type) {
-        this.obj = obj;          // Store the object
-        this.objType = type;     // Store the type info for casting
-    }
-
-
-    public <U> U getObject(Class<U> type) {
-        if (type.isInstance(obj)) {
-            return type.cast(obj);  // Safe casting using the provided type
-        } else {
-            throw new ClassCastException("Cannot cast " + (obj != null ? obj.getClass() : "null") + " to " + type);
-        }
-    }*/
 
     public void executeTasks(U obj, Class<U> type,String id) {
         List<Task<T>> tasks = tasksList.getTasks();

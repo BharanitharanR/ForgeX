@@ -152,15 +152,6 @@ public class EntityBuilderActor implements Task<InlineResponse200> {
                 if(dbConnection.findOne(query).isPresent())
                     dbConnection.updateRecord(query,new Document("$set",new Document("status.entityReqId",response.getMessage())));
 
-        /*                if(!doc.isEmpty())
-                {
-                    // Only atomic updates allowed
-                    if( dbConnection.updateRecord(query,new Document("$set",new Document("status.entityReqId",response.getMessage()))).getModifiedCount() < 1 )
-                    {
-                        log.error("status update failed");
-                    }
-                }*/
-
                 log.info("Task completed successfully: {} {}",getParentId(), response);
                 return null;
 

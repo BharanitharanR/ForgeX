@@ -143,9 +143,16 @@
 								<env>
 									<JVM_VALUES>
 										-Dmongodb.atlas.connection=mongodb://mongo-1:27017/forgex
-										-Dmongodb.collection.name=entitybuilder
+										-Dmongodb.collection.name=forgex/entitybuilder
 									</JVM_VALUES>
 								</env>
+								<volumes>
+									<bind>
+										<volume>
+											/var/run/docker.sock:/var/run/docker.sock
+										</volume>
+									</bind>
+								</volumes>
 								<dependsOn>mongodb</dependsOn>
 							</run>
 						</image>
@@ -165,6 +172,25 @@
 									<!-- <MONGO_INITDB_ROOT_USERNAME>${mongodb.user}</MONGO_INITDB_ROOT_USERNAME>
 									<MONGO_INITDB_ROOT_PASSWORD>${mongodb.password}</MONGO_INITDB_ROOT_PASSWORD> -->
 									<MONGO_INITDB_DATABASE>${mongodb.database}</MONGO_INITDB_DATABASE>
+								</env>
+							</run>
+						</image>
+						<!-- nginx  -->
+						<image>
+							<name>nginx:latest</name>
+							<alias>nginx</alias>
+							<run>
+								<network>
+									<mode>custom</mode>
+									<name>${network.name}</name>
+								</network>
+								<ports>
+									<port>8989:8989</port>
+								</ports>
+								<env>
+									<!-- <MONGO_INITDB_ROOT_USERNAME>${mongodb.user}</MONGO_INITDB_ROOT_USERNAME>
+									<MONGO_INITDB_ROOT_PASSWORD>${mongodb.password}</MONGO_INITDB_ROOT_PASSWORD>
+									<MONGO_INITDB_DATABASE>${mongodb.database}</MONGO_INITDB_DATABASE> -->
 								</env>
 							</run>
 						</image>

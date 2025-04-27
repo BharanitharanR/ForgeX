@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.bson.conversions.Bson;
 
@@ -26,6 +27,7 @@ import java.io.InputStream;
 import java.util.Date;
 
 @Component
+@Primary
 @EnableAutoConfiguration(exclude = {MongoAutoConfiguration.class})
 public class DatabaseHandler {
     protected Logger log = LoggerFactory.getLogger(DatabaseHandler.class);

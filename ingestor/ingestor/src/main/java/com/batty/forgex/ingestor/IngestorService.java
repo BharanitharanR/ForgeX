@@ -74,8 +74,6 @@ public class IngestorService implements GraphApi {
                         resp.set(((BsonObjectId) value.getInsertedId().asObjectId()).getValue().toHexString());
                     });
 
-            String jsonString = mapper.writeValueAsString(graphInput);
-
             pipelineService.executeTasks(graphInput,GraphInput.class,resp.get());
             // Response Builder
             InlineResponse200 response200 = new InlineResponse200();

@@ -1,9 +1,12 @@
 package com.batty.forgex.entityBuilder;
+import com.batty.forgex.entityBuilder.actor.MicroServiceManagerActor;
 import com.batty.forgex.entityBuilder.api.EntityApi;
 import com.batty.forgex.entityBuilder.datastore.ServiceCollectionDataStoreImpl;
 import com.batty.forgex.entityBuilder.model.InlineResponse200;
 import com.batty.forgex.entityBuilder.model.ServiceCollection;
 import com.batty.forgex.framework.datastore.DatabaseHandler;
+import com.batty.forgex.framework.pipeline.PipelineService;
+import com.batty.forgex.framework.utils.FolderUnzipper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.InsertOneResult;
 import org.bson.BsonObjectId;
@@ -18,10 +21,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -42,6 +48,14 @@ public class EntityBuilderService implements EntityApi {
 
     AtomicReference<String> resp =new AtomicReference<>();
 
+    @Autowired
+    protected FolderUnzipper unzipper;
+
+    @Autowired
+    protected MicroServiceManagerActor microServiceManagerActor;
+
+    @Autowired
+    private PipelineService pipelineService;
 
     @Override
     public ResponseEntity<InlineResponse200> entityProcessPost(MultipartFile message)  {
@@ -50,10 +64,6 @@ public class EntityBuilderService implements EntityApi {
             ObjectId fileId = dbHandler.uploadFileToGridFS(message.getOriginalFilename(), inputStream, message.getContentType());
             log.info("Stored ZIP in GridFS with ID: {}", fileId.toHexString());
             log.info("filename: {}",message.getOriginalFilename());
-            Document entityProcessDocument = new Document();
-
-            entityProcessDocument.put("fileId",fileId.toHexString());
-            entityProcessDocument.put("fileName",message.getOriginalFilename());
 
             ServiceCollection sc = new ServiceCollection();
             sc.setName(fileId.toHexString());
@@ -65,9 +75,19 @@ public class EntityBuilderService implements EntityApi {
                         resp.set(((BsonObjectId) value.getInsertedId().asObjectId()).getValue().toHexString());
                     });
 
-
-            message.transferTo(Path.of("/tmp/openapiSpec.zip"));
+            File destfile = new File("/tmp/"+resp.get());
+            if(!destfile.isDirectory()) {
+                if (destfile.mkdirs()) {
+                    message.transferTo(Path.of("/tmp/" + resp.get() + "/openapiSpec.zip"));
+                }
+            }
+            // Unzip and trigger
+            // A new folder by the name of resp.get created and
+            // each of yamls are moved to its own project name folders
+            // then the process to generate the services is kickedoff
             // Response Builder
+            pipelineService.executeTasks(sc,ServiceCollection.class,resp.get());
+
             InlineResponse200 response200 = new InlineResponse200();
             response200.setMessage(resp.get());
             ResponseEntity<InlineResponse200> res = new ResponseEntity<>( response200, HttpStatusCode.valueOf(200));
