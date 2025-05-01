@@ -18,6 +18,8 @@ COPY ${DEPENDENCY} /tmp
 # Ensure Maven, Docker CLI, and required tools are available
 RUN apk add --no-cache maven curl bash docker-cli docker-cli-buildx
 
+RUN mkdir -p /root/.m2
+
 # Install custom JARs into Maven local repo inside the container
 RUN mvn install:install-file \
     -Dfile=/tmp/dependency/framework-datastore-0.0.1-SNAPSHOT.jar \

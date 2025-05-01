@@ -86,6 +86,14 @@ public class MicroServiceManagerActor {
             Path datastoreDir = Paths.get(serviceDir, "src/main/java/com/batty/forgex");
             if( Files.exists(Path.of(datastoreDir + "/OpenApiGeneratorApplication.java")))
                 Files.delete(Path.of(datastoreDir + "/OpenApiGeneratorApplication.java"));
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(
+                    Path.of(String.valueOf(datastoreDir), "api"), "*ApiController.java")) {
+                for (Path entry : stream) {
+                    Files.delete(entry);
+                }
+            } catch (IOException e) {
+                e.printStackTrace(); // Or handle appropriately
+            }
             String controllerContent = """
                     package com.batty.forgex;
                     import com.fasterxml.jackson.databind.Module;
@@ -145,14 +153,16 @@ public class MicroServiceManagerActor {
             // 2. Inject DatastoreTemplate implementations
             generateDatastoreImpls(serviceDir);
 
+            generateControllers(serviceDir);
             // 3. Compile
             compileService(serviceDir);
 
+            int dynamicPort = getFreePort();
             // 4. Dockerize and deploy
             String imageName = "forgex/" + serviceName.toLowerCase();
-            createDockerImage(serviceDir, imageName);
+            createDockerImage(serviceDir, imageName,dynamicPort);
 
-            int dynamicPort = getFreePort();
+
             return runDockerContainer(imageName, dynamicPort);
         }
                 catch(Exception e)
@@ -189,6 +199,9 @@ public class MicroServiceManagerActor {
     private void createTemplateStoreImpls(String serviceDir) throws IOException {
         Path datastoreDir = Paths.get(serviceDir, "templates/spring/");
         Files.createDirectories(datastoreDir);
+
+        Path controllerDir = Paths.get(serviceDir, "templates/controller/");
+        Files.createDirectories(controllerDir);
         String mustTemplate = """
 package {{packageName}};
 
@@ -227,7 +240,8 @@ public class {{className}} {
         return datastore.insertWithResponse(doc);
     }
 
-    public Optional<{{entityName}}> findOne(Document query) {
+    public Optional<{{entityName}}> findOne(String objId) {
+        Document query = new Document("{{entityNameLower}}Id", objId);
         return datastore.findOne(query);
     }
 
@@ -240,6 +254,113 @@ public class {{className}} {
 
         Path implFile = datastoreDir.resolve("DataStoreImpl.mustache");
         Files.writeString(implFile, mustTemplate);
+
+
+        String controllerTemplate = """
+                package {{packageName}};
+                                
+                import com.batty.forgex.model.{{entityName}};
+                import com.batty.forgex.datastore.{{entityName}}DatastoreImpl;
+                import org.springframework.beans.factory.annotation.Autowired;
+                import org.springframework.web.bind.annotation.*;
+                import java.util.Optional;
+                import com.batty.forgex.model.Payment;
+                import io.swagger.v3.oas.annotations.ExternalDocumentation;
+                import io.swagger.v3.oas.annotations.Operation;
+                import io.swagger.v3.oas.annotations.Parameter;
+                import io.swagger.v3.oas.annotations.Parameters;
+                import io.swagger.v3.oas.annotations.media.ArraySchema;
+                import io.swagger.v3.oas.annotations.media.Content;
+                import io.swagger.v3.oas.annotations.media.Schema;
+                import io.swagger.v3.oas.annotations.responses.ApiResponse;
+                import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+                import io.swagger.v3.oas.annotations.tags.Tag;
+                import io.swagger.v3.oas.annotations.enums.ParameterIn;
+                import org.springframework.http.HttpStatus;
+                import org.springframework.http.MediaType;
+                import org.springframework.http.ResponseEntity;
+                import org.springframework.validation.annotation.Validated;
+                import org.springframework.web.bind.annotation.*;
+                import org.springframework.web.context.request.NativeWebRequest;
+                import org.springframework.web.multipart.MultipartFile;
+                import org.springframework.stereotype.Component;
+                import jakarta.validation.Valid;
+                import jakarta.validation.constraints.*;
+                import java.util.List;
+                import java.util.Map;
+                import java.util.Optional;
+                import jakarta.annotation.Generated;
+                import com.mongodb.client.result.InsertOneResult;
+                                
+                @Component("{{entityName}}Service")
+                @RestController
+                public class {{entityName}}Controller implements {{entityName}}Api{
+                                
+                    private final {{entityName}}DatastoreImpl datastore;
+                                
+                    @Autowired
+                    public {{entityName}}Controller({{entityName}}DatastoreImpl datastore) {
+                        this.datastore = datastore;
+                    }
+                                
+                    @Override
+                    public ResponseEntity<Void> {{entityNameLower}}Post(@RequestBody {{entityName}} doc) {
+                        Optional<InsertOneResult> result = datastore.insertDataResponse(doc);
+                            if (result.isPresent()) {
+                                return ResponseEntity.status(HttpStatus.CREATED).build();
+                            } else {
+                                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                            }
+                    }
+                                
+                    @Override
+                    public ResponseEntity<{{entityName}}> {{entityNameLower}}Get(@PathVariable String id) {
+                        Optional<{{entityName}}> {{entityNameLower}} = datastore.findOne(id);
+                        return payment
+                                .map(ResponseEntity::ok)
+                                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+                    }
+                }
+                                
+                                
+                """;
+        implFile = controllerDir.resolve("serviceController.mustache");
+        Files.writeString(implFile, controllerTemplate);
+
+
+    }
+
+    private void generateControllers(String serviceDir) throws IOException {
+        Path modelDir = Paths.get(serviceDir, "src/main/java/com/batty/forgex/model");
+        if (!Files.exists(modelDir)) return;
+
+        Path outputDir = Paths.get(serviceDir, "src/main/java/com/batty/forgex/api");
+        Files.createDirectories(outputDir);
+
+        Path templatePath = Paths.get(serviceDir, "templates/controller/serviceController.mustache");
+        Files.createDirectories(outputDir);
+        MustacheFactory mf = new DefaultMustacheFactory();
+        Mustache mustache = mf.compile(Files.newBufferedReader(templatePath), templatePath.getFileName().toString());
+
+        List<Path> entityFiles = Files.walk(modelDir)
+                .filter(f -> f.toString().endsWith(".java"))
+                .collect(Collectors.toList());
+
+        for (Path modelFile : entityFiles) {
+            String entityName = modelFile.getFileName().toString().replace(".java", "");
+            String packageName = "com.batty.forgex.api";
+            String className = entityName + "Controller";
+
+            Map<String, String> context = new HashMap<>();
+            context.put("packageName", packageName);
+            context.put("entityName", entityName);
+            context.put("entityNameLower", entityName.toLowerCase());
+
+            Path outputFile = outputDir.resolve(className + ".java");
+            try (Writer writer = new FileWriter(outputFile.toFile())) {
+                mustache.execute(writer, context).flush();
+            }
+        }
     }
 
     private void generateDatastoreImpls(String serviceDir) throws IOException {
@@ -265,6 +386,7 @@ public class {{className}} {
             context.put("packageName", packageName);
             context.put("entityName", entityName);
             context.put("className", className);
+            context.put("entityNameLower", entityName.toLowerCase());
 
             Path outputFilePath = outputDir.resolve(className + ".java");
 
@@ -368,6 +490,16 @@ public class {{className}} {
         }
 
     }
+
+    private void serviceController(String serviceDir) throws Exception {
+        Path serviceControllerDir = Paths.get(serviceDir, "src/main/java/com/batty/forgex/service");
+        Files.createDirectories(serviceControllerDir);
+
+        Path templatePath = Paths.get(serviceDir, "templates/controller/ServiceController.mustache");
+        createDatastoreImpls(String.valueOf(templatePath));
+
+
+    }
     private void compileService(String serviceDir) throws Exception {
         Path pomPath = Paths.get(serviceDir, "pom.xml");
         injectSpringBootPlugin(pomPath.toString());
@@ -381,14 +513,14 @@ public class {{className}} {
         }
     }
 
-    private void createDockerImage(String serviceDir, String imageName) throws Exception {
+    private void createDockerImage(String serviceDir, String imageName,long port) throws Exception {
         StringBuilder dockerfile = new StringBuilder("""
                 FROM bellsoft/liberica-openjdk-alpine-musl:21-cds
                 VOLUME /tmp
                 COPY target/*.jar app.jar
                 """);
 
-        dockerfile.append(constructEntryPointForContainer(imageName));
+        dockerfile.append(constructEntryPointForContainer(imageName,port));
 
         Path dockerPath = Paths.get(serviceDir + "/Dockerfile");
         Files.writeString(dockerPath, dockerfile);
@@ -488,10 +620,10 @@ public class {{className}} {
             return PortProvider.getPort();
     }
 
-    private StringBuilder constructEntryPointForContainer(String imageName)
+    private StringBuilder constructEntryPointForContainer(String imageName,long port)
     {
         return new StringBuilder().append("ENTRYPOINT [\"java\",")
-        .append("\"-Dserver.port=9595\",")
+        .append("\"-Dserver.port=").append(port +"\",")
         .append("\"-Dmongodb.atlas.connection=").append( dbConnectionString +"\",")
         .append("\"-Dmongodb.collection.name=").append( imageName+"\",")
         .append(("\"-Dmongodb.database.name=forgex\","))

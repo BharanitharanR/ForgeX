@@ -120,10 +120,7 @@ public class OpenApiSpecGenerator {
                                         .addMediaType("application/json",
                                                 new MediaType().schema(new Schema<>().$ref("#/components/schemas/" + node.getName())))))
                         .responses(new ApiResponses()
-                                .addApiResponse("201", new ApiResponse().description(node.getName() + " created successfully")))));
-
-        // GET all endpoint
-        paths.addPathItem(path, new PathItem().get(
+                                .addApiResponse("201", new ApiResponse().description(node.getName() + " created successfully")))).get(
                 new Operation()
                         .summary("List all " + node.getName() + "s")
                         .tags(Collections.singletonList(node.getName()))
@@ -133,10 +130,7 @@ public class OpenApiSpecGenerator {
                                         .content(new Content()
                                                 .addMediaType("application/json",
                                                         new MediaType().schema(new ArraySchema()
-                                                                .items(new Schema<>().$ref("#/components/schemas/" + node.getName())))))))));
-
-        // GET by ID endpoint
-        paths.addPathItem(path + "/{id}", new PathItem().get(
+                                                                .items(new Schema<>().$ref("#/components/schemas/" + node.getName())))))))).get(
                 new Operation()
                         .summary("Get " + node.getName() + " by ID")
                         .tags(Collections.singletonList(node.getName()))
