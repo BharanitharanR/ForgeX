@@ -111,9 +111,7 @@ GET /HikeList/user/{userID} → Retrieves user data.
 
 ✅ Example Payload:
 
-json
-Copy
-Edit
+```json
 {
 "userID": "123",
 "name": "John Doe",
@@ -121,6 +119,7 @@ Edit
 "$date": "2025-03-22T10:00:00Z"
 }
 }
+```
 🔗 3. Integrator Module
 The Integrator Module acts as the orchestrator, coordinating between services.
 
@@ -138,22 +137,18 @@ Aggregates and integrates data from multiple services.
 
 ✅ Run the platform:
 
-bash
-Copy
-Edit
+```sh
 docker-compose up -d
+```
 ✅ Stop the platform:
 
-bash
-Copy
-Edit
+```sh
 docker-compose down
+```
 2. Docker Configuration
    Ensure that the MongoDB container has persistent storage:
 
-yaml
-Copy
-Edit
+```yaml
 services:
 mongo:
 image: mongo:latest
@@ -187,51 +182,58 @@ forgex-integrator:
 
 volumes:
 mongodb_data:
+```
 🚀 Building and Running the Platform
 1. Build the Maven Project
    To build all modules, run:
 
-bash
-Copy
-Edit
+```sh
 mvn clean install
+```
+Note: For first time users run this first frpm /Forgex
+```sh
+   mvn install -N
+```
 2. Running Individual Modules Locally
    To run a module individually:
 
-bash
-Copy
-Edit
+
 # Platform Module
+```sh
 mvn spring-boot:run -pl platform
-
+```
 # Ingestor Service Module
+```sh
 mvn spring-boot:run -pl ingestor-service
-
+```
 # Integrator Module
+```sh
 mvn spring-boot:run -pl integrator-service
+```
 🔥 API Documentation
 The platform uses OpenAPI 3.0 for documenting and testing APIs.
 
 ✅ Access Swagger UI:
 
-bash
-Copy
-Edit
+```sh
 http://localhost:8081/swagger-ui.html
+```
 ✅ Sample API Calls:
 
-bash
-Copy
-Edit
+
 # Insert User Data
+```sh
 curl -X POST "http://localhost:8081/HikeList/user/123" -H "Content-Type: application/json" -d '{
 "userID": "123",
 "name": "John Doe"
 }'
-
+```
 # Get User Data
+```sh
 curl -X GET "http://localhost:8081/HikeList/user/123"
+```
 🔥 Environment Variables
+
 MONGO_HOST: MongoDB container name (for Docker network communication)
 
 MONGO_PORT: 27017 (default port)
