@@ -264,7 +264,7 @@ public class {{className}} {
                 import org.springframework.beans.factory.annotation.Autowired;
                 import org.springframework.web.bind.annotation.*;
                 import java.util.Optional;
-                import com.batty.forgex.model.Payment;
+                import com.batty.forgex.model.{{entityName}};
                 import io.swagger.v3.oas.annotations.ExternalDocumentation;
                 import io.swagger.v3.oas.annotations.Operation;
                 import io.swagger.v3.oas.annotations.Parameter;
@@ -316,7 +316,7 @@ public class {{className}} {
                     @Override
                     public ResponseEntity<{{entityName}}> {{entityNameLower}}Get(@PathVariable String id) {
                         Optional<{{entityName}}> {{entityNameLower}} = datastore.findOne(id);
-                        return payment
+                        return {{entityNameLower}}
                                 .map(ResponseEntity::ok)
                                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
                     }
