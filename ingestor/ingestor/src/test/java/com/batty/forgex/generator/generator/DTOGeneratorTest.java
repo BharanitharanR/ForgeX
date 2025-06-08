@@ -9,6 +9,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,7 +40,7 @@ class DTOGeneratorTest {
         nameField.setName("name");
         nameField.setType("String");
         
-        testEntity.setFields(Arrays.asList(idField, nameField));
+        testEntity.setFields(new ArrayList<>(Arrays.asList(idField, nameField)));
     }
 
     @Test
@@ -77,7 +78,7 @@ class DTOGeneratorTest {
         // Given
         Entity emptyEntity = new Entity();
         emptyEntity.setName("Empty");
-        emptyEntity.setFields(Arrays.asList());
+        emptyEntity.setFields(new ArrayList<>());
 
         // When
         dtoGenerator.generateDTO(emptyEntity, outputPath.toString());
@@ -95,7 +96,7 @@ class DTOGeneratorTest {
         Field emailField = new Field();
         emailField.setName("email");
         emailField.setType("String");
-        emailField.setAnnotations(Arrays.asList("@Email", "@NotBlank"));
+        emailField.setAnnotations(new ArrayList<>(Arrays.asList("@Email", "@NotBlank")));
         testEntity.getFields().add(emailField);
 
         // When

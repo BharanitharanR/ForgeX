@@ -9,6 +9,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,7 +40,7 @@ class RepositoryCodeGeneratorTest {
         nameField.setName("name");
         nameField.setType("String");
         
-        testEntity.setFields(Arrays.asList(idField, nameField));
+        testEntity.setFields(new ArrayList<>(Arrays.asList(idField, nameField)));
     }
 
     @Test
@@ -72,7 +73,7 @@ class RepositoryCodeGeneratorTest {
         // Given
         Entity emptyEntity = new Entity();
         emptyEntity.setName("Empty");
-        emptyEntity.setFields(Arrays.asList());
+        emptyEntity.setFields(new ArrayList<>());
 
         // When
         repositoryCodeGenerator.generateRepository(emptyEntity, outputPath.toString());

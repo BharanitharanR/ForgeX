@@ -136,6 +136,17 @@
 			<artifactId>compiler</artifactId>
 			<version>0.9.10</version>
 		</dependency>
+		<dependency>
+			<groupId>com.batty.forgex</groupId>
+			<artifactId>template-service-client</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.30</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

@@ -1,0 +1,5 @@
+com/batty/forgex/template/model/Template.class
+com/batty/forgex/template/controller/TemplateController.class
+com/batty/forgex/template/service/TemplateService.class
+com/batty/forgex/TemplateServiceApplication.class
+com/batty/forgex/template/repository/TemplateRepository.class

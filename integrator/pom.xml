@@ -93,6 +93,9 @@
 							<alias>integrator</alias>
 							<build>
 								<contextDir>${project.basedir}</contextDir>
+								<args>
+									<JAR_FILE>target/${project.artifactId}-${project.version}.jar</JAR_FILE>
+								</args>
 							</build>
 							<run>
 								<network>
@@ -175,7 +178,7 @@
 								</env>
 							</run>
 						</image>
-						<!-- ollama -->
+						<!-- ollama 
 						<image>
 							<name>ollama/ollama:latest</name>
 							<alias>ollama</alias>
@@ -189,6 +192,7 @@
 								</ports>
 							</run>
 						</image>
+						-->
 						<!-- nginx  -->
 						<image>
 							<name>nginx:latest</name>
@@ -233,6 +237,19 @@
 						<phase>post-integration-test</phase>
 						<goals>
 							<goal>push</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>3.2.5</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
 						</goals>
 					</execution>
 				</executions>

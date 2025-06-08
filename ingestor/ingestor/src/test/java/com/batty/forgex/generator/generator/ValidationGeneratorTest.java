@@ -9,6 +9,7 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,7 +40,7 @@ class ValidationGeneratorTest {
         nameField.setName("name");
         nameField.setType("String");
         
-        testEntity.setFields(Arrays.asList(idField, nameField));
+        testEntity.setFields(new ArrayList<>(Arrays.asList(idField, nameField)));
     }
 
     @Test
