@@ -78,6 +78,15 @@
 			<artifactId>jackson-dataformat-yaml</artifactId>
 			<version>2.13.3</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-mcp-server-spring-boot-starter</artifactId>
+			<version>1.0.0-M6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
 	</dependencies>
 	<modules>
 		<module>ingestor-client</module>

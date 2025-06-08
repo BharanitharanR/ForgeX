@@ -175,6 +175,20 @@
 								</env>
 							</run>
 						</image>
+						<!-- ollama -->
+						<image>
+							<name>ollama/ollama:latest</name>
+							<alias>ollama</alias>
+							<run>
+								<network>
+									<mode>custom</mode>
+									<name>${network.name}</name>
+								</network>
+								<ports>
+									<port>11434:11434</port>
+								</ports>
+							</run>
+						</image>
 						<!-- nginx  -->
 						<image>
 							<name>nginx:latest</name>

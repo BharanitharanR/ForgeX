@@ -190,8 +190,23 @@
 							</build>
 							<run>
 								<ports>
-									<port>8081:8080</port>
+									<port>8082:8080</port>
 								</ports>
+							</run>
+						</image>
+						<!-- Ollama -->
+						<image>
+							<name>ollama/ollama:latest</name>
+							<alias>ollama</alias>
+							<run>
+								<ports>
+									<port>11434:11434</port>
+								</ports>
+								<volumes>
+									<bind>
+										<volume>/root/.ollama:/root/.ollama</volume>
+									</bind>
+								</volumes>
 							</run>
 						</image>
 					</images>
