@@ -1,0 +1,189 @@
+openapi: 3.0.3
+info:
+  title: Template Service API
+  description: API for managing code generation templates
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+paths:
+  /api/templates:
+    get:
+      summary: Get all templates
+      operationId: getAllTemplates
+      responses:
+        '200':
+          description: List of templates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Template'
+    post:
+      summary: Create a new template
+      operationId: createTemplate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Template'
+      responses:
+        '200':
+          description: Created template
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+        '400':
+          description: Invalid input
+
+  /api/templates/{id}:
+    get:
+      summary: Get template by ID
+      operationId: getTemplateById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Template found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+        '404':
+          description: Template not found
+    delete:
+      summary: Delete template
+      operationId: deleteTemplate
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Template deleted
+
+  /api/templates/search:
+    get:
+      summary: Search template by name, type, and language
+      operationId: getTemplate
+      parameters:
+        - name: name
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: language
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Template found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Template'
+        '404':
+          description: Template not found
+
+  /api/templates/type/{type}/language/{language}:
+    get:
+      summary: Get templates by type and language
+      operationId: getTemplatesByTypeAndLanguage
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: language
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of templates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Template'
+
+  /api/templates/tag/{tag}:
+    get:
+      summary: Get templates by tag
+      operationId: getTemplatesByTag
+      parameters:
+        - name: tag
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of templates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Template'
+
+  /api/templates/seed:
+    post:
+      summary: Seed default templates
+      operationId: seedTemplates
+      responses:
+        '200':
+          description: Templates seeded successfully
+
+components:
+  schemas:
+    Template:
+      type: object
+      properties:
+        id:
+          type: string
+          format: objectid
+        name:
+          type: string
+        type:
+          type: string
+        language:
+          type: string
+        version:
+          type: string
+        active:
+          type: boolean
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        content:
+          type: string
+      required:
+        - name
+        - type
+        - language
+        - content 

@@ -20,7 +20,8 @@ public class TemplateController {
 
     @PostMapping
     public ResponseEntity<Template> createTemplate(@RequestBody Template template) {
-        return ResponseEntity.ok(templateService.createTemplate(template));
+        /*return ResponseEntity.ok(templateService.createTemplate(template));*/
+        return null;
     }
 
     @GetMapping
@@ -30,16 +31,18 @@ public class TemplateController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Template> getTemplateById(@PathVariable String id) {
-        return templateService.getTemplateById(id)
+    return null;
+        /*        return templateService.getAllTemplates()
             .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+            .orElse(ResponseEntity.notFound().build());*/
     }
 
     @GetMapping("/name/{name}")
     public ResponseEntity<Template> getTemplateByName(@PathVariable String name) {
-        return templateService.getTemplateByName(name)
+        return  null;
+/*        return templateService.getTemplateByName(name)
             .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+            .orElse(ResponseEntity.notFound().build());*/
     }
 
     @PutMapping("/{id}")

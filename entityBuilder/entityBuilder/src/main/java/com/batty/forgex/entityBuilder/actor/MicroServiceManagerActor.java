@@ -518,7 +518,15 @@ public class {{className}} {
                 FROM bellsoft/liberica-openjdk-alpine-musl:21-cds
                 VOLUME /tmp
                 COPY target/*.jar app.jar
+            
+                ENTRYPOINT ["java",
+                    "-Dspring.application.name=${SERVICE_NAME}",
+                    "-Deureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka",
+                    "-Deureka.instance.hostname=${SERVICE_HOSTNAME}",
+                    "-Djava.security.egd=file:/dev/./urandom",
+                    "-jar", "/app.jar"]
                 """);
+
 
         dockerfile.append(constructEntryPointForContainer(imageName,port));
 
@@ -554,6 +562,11 @@ public class {{className}} {
                 <dependency>
                   <groupId>org.springframework.boot</groupId>
                   <artifactId>spring-boot-starter-data-mongodb</artifactId>
+                </dependency>
+                <dependency>
+                	<groupId>org.springdoc</groupId>
+                	<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                	<version>2.1.0</version> <!-- Use latest -->
                 </dependency>
                 """;
 
