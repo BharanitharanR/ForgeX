@@ -49,7 +49,13 @@
 			<artifactId>jul-to-slf4j</artifactId>
 			<version>2.0.9</version>
 		</dependency>
-			<dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.1.0</version> <!-- Use latest -->
+		</dependency>
+
+		<dependency>
 				<groupId>org.mongodb</groupId>
 				<artifactId>mongodb-driver-sync</artifactId>
 				<version>4.11.1</version>

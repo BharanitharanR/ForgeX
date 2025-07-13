@@ -57,10 +57,10 @@
   <modules>
     <module>framework</module>
     <module>ingestor</module>
+    <module>template-service-parent</module>
     <module>entityBuilder</module>
     <module>integrator</module>
-    <module>Forgex-MCP-Server</module>
-    <module>template-service-parent</module>
+ 
     <!--
     <module>ruleCrafter</module>
     <module>collator</module>

@@ -15,11 +15,9 @@
     <packaging>pom</packaging>
     <name>Template Service Parent</name>
     <description>Template Service for code generation</description>
-    <version>0.0.1-SNAPSHOT</version>
 
     <modules>
         <module>template-service-app</module>
-        <module>template-service-client</module>
     </modules>
 
     <properties>

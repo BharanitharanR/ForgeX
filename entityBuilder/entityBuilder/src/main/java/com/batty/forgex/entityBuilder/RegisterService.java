@@ -1,4 +1,4 @@
-package com.batty.forgex.ingestor;
+package com.batty.forgex.entityBuilder;
 
 /*
 import com.batty.forgex.framework.interfaces.RegisterServiceInterface;
