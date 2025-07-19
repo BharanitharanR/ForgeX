@@ -104,7 +104,9 @@ public class MicroServiceManagerActor {
                     import org.springframework.context.annotation.ComponentScan;
                     import org.springframework.context.annotation.FilterType;
                     import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator;
+                    import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
                                         
+                    @EnableDiscoveryClient                        
                     @SpringBootApplication(
                         nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
                     )
@@ -518,13 +520,6 @@ public class {{className}} {
                 FROM bellsoft/liberica-openjdk-alpine-musl:21-cds
                 VOLUME /tmp
                 COPY target/*.jar app.jar
-            
-                ENTRYPOINT ["java",
-                    "-Dspring.application.name=${SERVICE_NAME}",
-                    "-Deureka.client.serviceUrl.defaultZone=http://eureka:8761/eureka",
-                    "-Deureka.instance.hostname=${SERVICE_HOSTNAME}",
-                    "-Djava.security.egd=file:/dev/./urandom",
-                    "-jar", "/app.jar"]
                 """);
 
 
@@ -568,6 +563,11 @@ public class {{className}} {
                 	<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
                 	<version>2.1.0</version> <!-- Use latest -->
                 </dependency>
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+                    <version>3.1.5</version> <!-- Explicit version to avoid using BOM -->
+                </dependency>
                 """;
 
         String updated;
@@ -576,7 +576,6 @@ public class {{className}} {
         } else {
             updated = "<dependencies>\n" + depXml + "\n</dependencies>";
         }
-
         Files.writeString(path, updated);
     }
 
@@ -613,8 +612,10 @@ public class {{className}} {
     }
 
     private String runDockerContainer(String imageName, int port) throws Exception {
+        String containerName = imageName.substring(imageName.lastIndexOf("/") + 1);
         ProcessBuilder builder = new ProcessBuilder(
                 "docker", "run", "-d",
+                "--name", containerName,
                 "--network", "forgex-integrator",
                 "-p", port + ":" + port,
                 imageName
@@ -633,14 +634,18 @@ public class {{className}} {
             return PortProvider.getPort();
     }
 
-    private StringBuilder constructEntryPointForContainer(String imageName,long port)
-    {
-        return new StringBuilder().append("ENTRYPOINT [\"java\",")
-        .append("\"-Dserver.port=").append(port +"\",")
-        .append("\"-Dmongodb.atlas.connection=").append( dbConnectionString +"\",")
-        .append("\"-Dmongodb.collection.name=").append( imageName+"\",")
-        .append(("\"-Dmongodb.database.name=forgex\","))
-        .append("\"-jar\",")
-        .append("\"/app.jar\"]");
+    private StringBuilder constructEntryPointForContainer(String imageName, long port) {
+        return new StringBuilder()
+                .append("ENTRYPOINT [\"java\",")
+                .append("\"-Dserver.port=").append(port).append("\",")
+                .append("\"-Dmongodb.atlas.connection=").append(dbConnectionString).append("\",")
+                .append("\"-Dmongodb.collection.name=").append(imageName).append("\",")
+                .append("\"-Dspring.application.name=").append(imageName).append("\",")
+                .append("\"-Deureka.client.service-url.defaultZone=http://registry-service-1:8761/eureka/\",")
+                .append("\"-Dmongodb.database.name=forgex\",")
+                .append("\"-Dlogging.level.com.netflix.discovery=DEBUG\",")
+                .append("\"-Dlogging.level.org.springframework.cloud=DEBUG\",")
+                .append("\"-jar\",")
+                .append("\"/app.jar\"]");
     }
 }

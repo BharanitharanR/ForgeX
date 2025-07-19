@@ -27,6 +27,11 @@
 	</properties>
 	<dependencies>
 		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mustache</artifactId>
 		</dependency>
@@ -66,11 +71,8 @@
 				<version>4.11.1</version>
 			</dependency>
 		<!-- https://mvnrepository.com/artifact/io.fabric8/docker-maven-plugin -->
-		<dependency>
-			<groupId>io.fabric8</groupId>
-			<artifactId>docker-maven-plugin</artifactId>
-			<version>0.43.4</version>
-		</dependency>
+
+
 		<dependency>
 			<groupId>com.batty.forgex</groupId>
 			<artifactId>framework-utils</artifactId>

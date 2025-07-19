@@ -1,2 +1,0 @@
-# registry
-Custom service registry 

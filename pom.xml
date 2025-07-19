@@ -60,6 +60,7 @@
     <module>template-service-parent</module>
     <module>entityBuilder</module>
     <module>integrator</module>
+    <module>Forgex-MCP-Server</module>
  
     <!--
     <module>ruleCrafter</module>

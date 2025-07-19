@@ -1,9 +1,12 @@
-forgex/integrator:0.0.1-SNAPSHOT
 forgex/entitybuilder:0.0.1-SNAPSHOT
 forgex/template-service:0.0.1-SNAPSHOT
 forgex/ingestor-service:0.0.1-SNAPSHOT
-forgex/payment:latest
-forgex/role:latest
-forgex/user:latest
+forgex/integrator:0.0.1-SNAPSHOT
+forgex/customer:latest
+forgex/dish:latest
 forgex/category:latest
-forgex/expense:latest
+forgex/supervisor:latest
+forgex/employee:latest
+forgex/warehouse:latest
+forgex/user:latest
+forgex/forgex-mcp-server:0.0.1

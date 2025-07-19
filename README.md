@@ -90,7 +90,7 @@ Reusable MongoDB utilities exposed as injectable Spring beans.
 
 ### 2. 🔥 Ingestor 
 
-Consumes and processes external data.
+Consumes and processes external metadata and converts it into openapi spec
 
 **Endpoints:**
 

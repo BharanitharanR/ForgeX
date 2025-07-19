@@ -1,0 +1,44 @@
+package {{packageName}};
+
+import com.batty.forgex.framework.datastore.interfaces.GenericDatastore;
+import com.batty.forgex.framework.datastore.provider.DatastoreProvider;
+import com.mongodb.client.result.InsertOneResult;
+import com.mongodb.client.result.UpdateResult;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Optional;
+
+@Component("{{className}}")
+public class {{className}} {
+
+    private static final Logger log = LoggerFactory.getLogger({{className}}.class);
+    private final GenericDatastore<{{entityName}}> datastore;
+
+    @Autowired
+    public {{className}}(DatastoreProvider provider) {
+        this.datastore = provider.getDatastore({{entityName}}.class);
+    }
+
+    public Optional<{{entityName}}> findStatus(String objId) {
+        Document query = new Document("_id", new ObjectId(objId));
+        return datastore.findOneFromKey(query, "data");
+    }
+
+    public Optional<InsertOneResult> insertDataResponse({{entityName}} doc) {
+        return datastore.insertWithResponse(doc);
+    }
+
+    public Optional<{{entityName}}> findOne(Document query) {
+        return datastore.findOne(query);
+    }
+
+    @SuppressWarnings("unchecked")
+    public UpdateResult updateRecord(Document query, Document update) {
+        return datastore.update(query, update);
+    }
+}
