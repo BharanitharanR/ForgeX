@@ -381,7 +381,7 @@ curl -X GET "http://localhost:8081/HikeList/user/123"
 
 ## 💪 Author
 
-**Bharani Tharan Ragunathan**\
+**Bharanitharan Ragunathan**\
 Developer & Architect\
 [Email](mailto\:bharani3ran@gmail.com)
 
