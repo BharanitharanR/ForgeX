@@ -1,272 +1,269 @@
 # ForgeX
+
 Crafting Services from Metadata, in Real-Time
 
+ForgeX is licensed under the AGPL-3.0 for open-source use. For proprietary/commercial use, a separate commercial license is required. Contact [bharani3ran@gmail.com](mailto\:bharani3ran@gmail.com) for commercial licensing inquiries.
 
+---
 
-ForgeX is licensed under the AGPL-3.0 for open-source use.  
-For proprietary/commercial use, a separate commercial license is required.  
-Contact bharani3ran@gmail.com for commercial licensing inquiries.
+## 🚀 ForgeX Platform - Overview
 
+ForgeX is a modular, opinionated Spring Boot platform designed to generate, compile, and deploy microservices from metadata. It provides seamless integration with MongoDB, OpenAPI, and Docker for rapid prototyping and deployment.
 
-🚀 ForgeX Platform - README
-🛠️ Project Overview
-ForgeX is a modular platform designed for seamless data ingestion, processing, and integration. It consists of three primary modules:
+### 🔧 Modules
 
-Platform Module:
+#### 1. **Platform Module**
 
-Contains reusable database utilities.
+- Reusable utilities and database operations.
+- MongoDB handler classes and beans for dependency injection.
 
-Includes MongoDB handler classes and other common functionalities.
+#### 2. **Ingestor Service Module**
 
-Exposes beans for dependency injection across services.
+- Consumes and processes incoming data.
+- Leverages the Platform Module for database operations.
 
-Ingestor Service Module:
+#### 3. **Integrator Service Module**
 
-Responsible for consuming and processing incoming data.
+- Orchestrates communication between services and external systems.
+- Dockerized and built using Spring Boot.
 
-Uses Spring Boot and MongoDB for storing and retrieving data.
+---
 
-Connects to the Platform Module for database operations.
+## 📁 Project Structure
 
-Integrator Module:
-
-Orchestrates interactions between multiple services.
-
-Facilitates communication between the Ingestor and external systems.
-
-Built with Spring Boot and Dockerized for deployment.
-
-📁 Project Structure
-bash
-Copy
-Edit
+```
 /forgex
-├── platform                # Platform Module (Database utilities)
-│      ├── src/main/java/com/batty/forgex/framework/datastore  # Database handler
-│      ├── Dockerfile
-│      ├── pom.xml
-│      └── README.md
+├── framework                # Database utilities
+│   ├── src/main/java/com/batty/forgex/framework/datastore
+│   ├── Dockerfile
+│   ├── pom.xml
+│   └── README.md
 │
-├── ingestor-service        # Ingestor Service Module
-│      ├── src/main/java/com/batty/forgex/ingestor
-│      ├── Dockerfile
-│      ├── pom.xml
-│      └── README.md
+├── ingestor                  # Parse the Metadata and creates the Openapi spec
+│   ├── src/main/java/com/batty/forgex/ingestor
+│   ├── Dockerfile
+│   ├── pom.xml
+│   └── README.md
 │
-├── integrator-service      # Integrator Module
-│      ├── src/main/java/com/batty/forgex/integrator
-│      ├── Dockerfile
-│      ├── pom.xml
-│      └── README.md
+├── entityBuilder             # Use the openapi spec to generate Microservices app and deploy them 
+│   ├── src/main/java/com/batty/forgex/entityBuilder
+│   ├── Dockerfile
+│   ├── pom.xml
+│   └── README.md
 │
-├── docker-compose.yml      # Docker compose configuration
+├── docker-compose.yml      # Multi-service configuration
 ├── .env                    # Environment variables
-├── README.md               # This file
+├── README.md               # Main documentation
 ├── .gitignore
-├── mvnw
 └── pom.xml                 # Maven parent configuration
-⚙️ Technology Stack
-Backend: Spring Boot (Java)
+```
 
-Database: MongoDB
+---
 
-Containerization: Docker & Docker Compose
+## ⚙️ Technology Stack
 
-Build Tool: Maven
+- **Backend**: Spring Boot (Java)
+- **Database**: MongoDB
+- **Containerization**: Docker & Docker Compose
+- **Build Tool**: Maven
+- **API Specification**: OpenAPI (Swagger)
 
-API Specification: OpenAPI (Swagger)
+---
 
-🔥 Modules Overview
-🛠️ 1. Platform Module
-The Platform Module provides reusable utilities, primarily for database operations.
+## 🔥 Module Details
 
-✅ Features:
+### 1. ⚖️ Framework Module
 
-MongoDB connection and CRUD operations.
+Reusable MongoDB utilities exposed as injectable Spring beans.
 
-Utility classes and helper methods.
+**Features:**
 
-Exposes beans for Spring Boot services.
+- MongoDB connection and CRUD
+- Utility classes and helpers
 
-✅ Key Components:
+**Components:**
 
-DatabaseHandler: Handles MongoDB operations (insert, update, delete, find).
+- `DatabaseHandler`: Encapsulates MongoDB logic
+- `application.properties`: MongoDB configs
 
-application.properties: Contains MongoDB configurations.
+---
 
-🔥 2. Ingestor Service Module
-The Ingestor Service is responsible for:
+### 2. 🔥 Ingestor 
 
-Consuming data from external sources.
+Consumes and processes external data.
 
-Processing and storing it in MongoDB.
+**Endpoints:**
 
-Using the platform module for database operations.
+```
+POST /HikeList/user/{userID}   ➔ Inserts user data
+GET /HikeList/user/{userID}    ➔ Retrieves user data
+```
 
-✅ Key Endpoints:
-
-POST /HikeList/user/{userID} → Inserts user data into MongoDB.
-
-GET /HikeList/user/{userID} → Retrieves user data.
-
-✅ Example Payload:
+**Sample Payload:**
 
 ```json
 {
-"userID": "123",
-"name": "John Doe",
-"lastModifiedTimeStamp": {
-"$date": "2025-03-22T10:00:00Z"
-}
+  "userID": "123",
+  "name": "John Doe",
+  "lastModifiedTimeStamp": {
+    "$date": "2025-03-22T10:00:00Z"
+  }
 }
 ```
-🔗 3. Integrator Module
-The Integrator Module acts as the orchestrator, coordinating between services.
 
-✅ Features:
+---
 
-Service-to-service communication.
+### 3. 🔗 Integrator Service
 
-Error handling and retry mechanisms.
+Coordinates between services and integrates data across endpoints.
 
-Aggregates and integrates data from multiple services.
+**Features:**
 
-🐳 Docker Setup
-1. Docker Compose
-   The platform uses Docker Compose to run services in isolated containers on a common network.
+- Service-to-service communication
+- Retry/error handling logic
+- Data aggregation layer
 
-✅ Run the platform:
+---
+
+## 🛣️ Docker Setup
+
+### Docker Compose
+
+Run all services in a shared network:
 
 ```sh
 docker-compose up -d
-```
-✅ Stop the platform:
-
-```sh
 docker-compose down
 ```
-2. Docker Configuration
-   Ensure that the MongoDB container has persistent storage:
+
+### Sample docker-compose.yml
 
 ```yaml
 services:
-mongo:
-image: mongo:latest
-ports:
-- "27017:27017"
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - forgex-integrator
+
+  ingestor-service:
+    build:
+      context: ./ingestor-service
+    ports:
+      - "8081:8081"
+    environment:
+      - MONGO_HOST=mongo
+    networks:
+      - forgex-integrator
+
+  integrator-service:
+    build:
+      context: ./integrator-service
+    ports:
+      - "8082:8082"
+    networks:
+      - forgex-integrator
+
+networks:
+  forgex-integrator:
+
 volumes:
-- mongodb_data:/data/db
-networks:
-- forgex-integrator
-
-ingestor-service:
-build:
-context: ./ingestor-service
-ports:
-- "8081:8081"
-environment:
-- MONGO_HOST=mongo
-networks:
-- forgex-integrator
-
-integrator-service:
-build:
-context: ./integrator-service
-ports:
-- "8082:8082"
-networks:
-- forgex-integrator
-
-networks:
-forgex-integrator:
-
-volumes:
-mongodb_data:
+  mongodb_data:
 ```
-🚀 Building and Running the Platform
-1. Build the Maven Project
-   To build all modules, run:
+
+---
+
+## 🚀 Build and Run
+
+### 1. Build All Modules
 
 ```sh
 mvn clean install
 ```
-Note: For first time users run this first frpm /Forgex
+
+First-time setup:
+
 ```sh
-   mvn install -N
+mvn install -N
 ```
-2. Running Individual Modules Locally
-   To run a module individually:
 
+### 2. Run Modules Locally
 
+```sh
 # Platform Module
-```sh
 mvn spring-boot:run -pl platform
-```
+
 # Ingestor Service Module
-```sh
 mvn spring-boot:run -pl ingestor-service
-```
-# Integrator Module
-```sh
+
+# Integrator Service Module
 mvn spring-boot:run -pl integrator-service
 ```
-🔥 API Documentation
-The platform uses OpenAPI 3.0 for documenting and testing APIs.
 
-✅ Access Swagger UI:
+---
+
+## 📘️ API Documentation
+
+### Swagger UI
 
 ```sh
 http://localhost:8081/swagger-ui.html
 ```
-✅ Sample API Calls:
 
+### Sample API Calls
 
+```sh
 # Insert User Data
-```sh
-curl -X POST "http://localhost:8081/HikeList/user/123" -H "Content-Type: application/json" -d '{
-"userID": "123",
-"name": "John Doe"
-}'
-```
+curl -X POST "http://localhost:8081/HikeList/user/123" \
+  -H "Content-Type: application/json" \
+  -d '{"userID": "123", "name": "John Doe"}'
+
 # Get User Data
-```sh
 curl -X GET "http://localhost:8081/HikeList/user/123"
 ```
-🔥 Environment Variables
 
-MONGO_HOST: MongoDB container name (for Docker network communication)
+---
 
-MONGO_PORT: 27017 (default port)
+## 🔎 Environment Variables
 
-SERVER_PORT: Service ports (8081, 8082, etc.)
+- `MONGO_HOST`: MongoDB container name
+- `MONGO_PORT`: Default 27017
+- `SERVER_PORT`: Exposed service port (e.g. 8081)
+- `JAVA_OPTS`: JVM arguments
 
-JAVA_OPTS: JVM runtime parameters
+---
 
-✅ Contributing
-To contribute:
+## ✅ Contributing
 
-Fork the repository.
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push and open a pull request
 
-Create a feature branch.
+---
 
-Commit your changes.
+## ⚠️ Troubleshooting
 
-Push the changes and create a pull request.
+- Mongo connection issues: Ensure Docker containers are networked
+- Data persistence: Check volume mounting
+- Debug logs: `docker logs <container-id>`
 
-🚀 Troubleshooting
-MongoDB connection issues: Ensure the services are in the same Docker network.
+---
 
-Data persistence: Verify MongoDB volume mapping.
+## 🎯 Roadmap / Future Enhancements
 
-Container logs: Use docker logs <container-id> to debug issues.
+- Kafka for event-driven messaging
+- JWT Authentication
+- GitHub Actions CI/CD pipeline
 
-🎯 Future Enhancements
-Add Kafka for event-driven architecture.
+---
 
-Implement JWT-based authentication.
+## 💪 Author
 
-Create CI/CD pipeline using GitHub Actions.
+**Bharani Tharan Ragunathan**\
+Developer & Architect\
+[Email](mailto\:bharani3ran@gmail.com)
 
-💡 Author
-Bharani Tharan Ragunathan
-🔗 ForgeX Developer & Architect[README.md](integrator%2FREADME.md)

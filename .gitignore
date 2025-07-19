@@ -148,3 +148,4 @@ template-service-parent/template-service-client/target/generated-sources/remote-
 template-service-parent/template-service-client/target/maven-archiver/pom.properties
 template-service-parent/template-service-client/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
 template-service-parent/template-service-client/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+/template-service-parent/template-service-client/target
