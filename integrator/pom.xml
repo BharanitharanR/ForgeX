@@ -324,7 +324,7 @@
 								</env>
 							</run>
 						</image>
-						<!-- ollama 
+						<!-- ollama  -->
 						<image>
 							<name>ollama/ollama:latest</name>
 							<alias>ollama</alias>
@@ -338,7 +338,7 @@
 								</ports>
 							</run>
 						</image>
-						-->
+						<!-- -->
 						<!-- nginx  -->
 						<image>
 							<name>nginx:latest</name>
