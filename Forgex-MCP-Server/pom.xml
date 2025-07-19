@@ -1,0 +1,74 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.forgex</groupId>
+	<artifactId>forgex-mcp-server</artifactId>
+	<version>0.0.1</version>
+	<packaging>pom</packaging> <!-- Since no Java build is happening -->
+	<parent>
+		<groupId>com.batty.forgex</groupId>
+		<artifactId>forgex-parent</artifactId>
+		<version>1.0.0</version>
+		<relativePath/> <!-- Path to the parent POM -->
+	</parent>
+	<properties>
+		<docker.image.name>forgex-mcp-server</docker.image.name>
+		<docker.image.tag>0.0.1-SNAPSHOT</docker.image.tag>
+		<forgex.name>${forgex}</forgex.name>
+		<java.version>21</java.version>
+		<project.id>forgex-mcp-server</project.id>
+		<docker.repo>forgex-mcp-server</docker.repo>
+		<docker.image.tag>${version}</docker.image.tag>
+		<springfox.version>2.9.2</springfox.version>
+		<swagger-ui.version>4.15.5</swagger-ui.version>
+		<doNotPushToDHub>true</doNotPushToDHub>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<configuration>
+					<skipPush>${doNotPushToDHub}</skipPush>
+					<images>
+						<image>
+							<name>${forgex.name}/${docker.repo}:${version}</name>
+							<alias>dockerfile</alias>
+							<build>
+								<contextDir>${project.basedir}</contextDir>
+							</build>
+							<run>
+								<ports>
+									<port>8000:8000</port>
+								</ports>
+							</run>
+						</image>
+						<!-- Ollama -->
+					</images>
+
+				</configuration>
+				<executions>
+					<execution>
+						<id>buildDock</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>build</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>pushDock</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>push</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

@@ -75,5 +75,6 @@
 		<module>framework-message</module>
 		<module>framework-async</module>
 		<module>framework-utils</module>
+		<module>framework-registry</module>
 	</modules>
 </project>

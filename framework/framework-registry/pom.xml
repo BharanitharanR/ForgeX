@@ -1,27 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
-		<groupId>com.batty.forgex</groupId>
-		<artifactId>forgex-parent</artifactId>
-		<version>1.0.0</version>
-		<relativePath/> <!-- Path to the parent POM -->
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.1.5</version>
+		<relativePath/> <!-- Lookup from Maven Central -->
 	</parent>
+
 	<groupId>com.batty.forgex</groupId>
 	<artifactId>framework-registry</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>framework-registry</name>
 	<description>Framework registry attempt</description>
 	<packaging>jar</packaging>
+
 	<properties>
 		<java.version>21</java.version>
-		<project.id>service</project.id>
-		<JAR_FILE>${project.basedir}/target/${artifactId}-${version}.jar</JAR_FILE>
-		<docker.repo>bharani3ran01/frameworkrepo</docker.repo>
+		<springfox.version>2.9.2</springfox.version>
+		<swagger-ui.version>4.15.5</swagger-ui.version>
+		<docker.repo>registry-service</docker.repo>
 		<docker.image.tag>${version}</docker.image.tag>
+		<doNotPushToDHub>true</doNotPushToDHub>
+		<JAR_FILE>${project.basedir}/target/${artifactId}-${version}.jar</JAR_FILE>
 	</properties>
+
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -37,38 +52,65 @@
 			<artifactId>jul-to-slf4j</artifactId>
 			<version>2.0.9</version>
 		</dependency>
-			<dependency>
-				<groupId>org.mongodb</groupId>
-				<artifactId>mongodb-driver-sync</artifactId>
-				<version>4.11.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.mongodb</groupId>
-				<artifactId>bson</artifactId>
-				<version>4.11.1</version>
-			</dependency>
 	</dependencies>
-	<build>
-	<plugins>
-<!--	<plugin>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-maven-plugin</artifactId>
-	</plugin>-->
-	<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<version>3.2.0</version> <!-- Use the appropriate version -->
-					<configuration>
-						<classesDirectory>${project.build.directory}/classes</classesDirectory>
 
-						<archive>
-							<manifest>
-								<!-- You can specify the Main-Class if it's an executable JAR -->
-								<!--<mainClass>com.example.MainClass</mainClass>-->
-							</manifest>
-						</archive>
-					</configuration>
-				</plugin>
-			</plugins>
-		</build>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>2022.0.4</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+			<plugin>
+				<groupId>io.fabric8</groupId>
+				<artifactId>docker-maven-plugin</artifactId>
+				<version>0.43.4</version>
+				<configuration>
+					<skipPush>${doNotPushToDHub}</skipPush>
+					<images>
+						<image>
+							<name>${docker.repo}:${docker.image.tag}</name>
+							<alias>dockerfile</alias>
+							<build>
+								<contextDir>${project.basedir}</contextDir>
+							</build>
+							<run>
+								<ports>
+									<port>8081:8080</port>
+								</ports>
+							</run>
+						</image>
+					</images>
+				</configuration>
+				<executions>
+					<execution>
+						<id>buildDock</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>build</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>pushDock</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>push</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
