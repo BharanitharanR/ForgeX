@@ -1,10 +1,12 @@
 forgex/entitybuilder:0.0.1-SNAPSHOT
 forgex/template-service:0.0.1-SNAPSHOT
 forgex/ingestor-service:0.0.1-SNAPSHOT
+forgex/product:latest
+forgex/supplier:latest
 forgex/integrator:0.0.1-SNAPSHOT
-forgex/customer:latest
-forgex/dish:latest
 forgex/category:latest
+forgex/dish:latest
+forgex/customer:latest
 forgex/supervisor:latest
 forgex/employee:latest
 forgex/warehouse:latest
