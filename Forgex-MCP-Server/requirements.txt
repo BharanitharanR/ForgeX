@@ -1,0 +1,57 @@
+mcp>=1.0.0
+fastapi>=0.100.0
+uvicorn>=0.24.0
+pydantic>=1.10.0,<3.0.0
+httpx>=0.25.0
+python-multipart>=0.0.6
+
+# Usage Instructions:
+
+# 1. Install dependencies:
+#    pip install -r requirements.txt
+
+# 2. Run the server:
+#    python ingestor_mcp_server.py
+
+# 3. Test endpoints:
+#    - OpenAPI JSON: http://localhost:8000/openapi.json
+#    - Health check: http://localhost:8000/health
+#    - Direct graph processing: POST http://localhost:8000/graph/process
+
+# 4. For OpenWebUI integration:
+#    - The MCP server runs on stdio for OpenWebUI
+#    - FastAPI server runs on port 8000 for OpenAPI spec access
+#    - Use the process_graph tool in OpenWebUI
+
+# 5. Example graph input for testing:
+# {
+#   "nodes": [
+#     {
+#       "type": "ENTITY",
+#       "name": "Employee",
+#       "fields": [
+#         {"name": "employeeId", "type": "string", "required": true},
+#         {"name": "name", "type": "string", "required": true}
+#       ],
+#       "conditions": [],
+#       "actions": []
+#     },
+#     {
+#       "type": "ENTITY", 
+#       "name": "Department",
+#       "fields": [
+#         {"name": "departmentId", "type": "string", "required": true},
+#         {"name": "name", "type": "string", "required": true}
+#       ],
+#       "conditions": [],
+#       "actions": []
+#     }
+#   ],
+#   "edges": [
+#     {
+#       "source": "Employee",
+#       "target": "Department",
+#       "relationship": "belongsTo"
+#     }
+#   ]
+# }

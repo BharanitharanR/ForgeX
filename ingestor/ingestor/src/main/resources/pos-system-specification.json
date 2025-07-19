@@ -1,0 +1,163 @@
+{
+  "nodes": [
+    {
+      "type": "ENTITY",
+      "name": "Product",
+      "fields": [
+        {"name": "productId", "type": "string", "required": true, "create": true},
+        {"name": "name", "type": "string", "required": true},
+        {"name": "description", "type": "string", "required": false},
+        {"name": "price", "type": "number", "required": true},
+        {"name": "category", "type": "string", "required": false},
+        {"name": "createdDate", "type": "date", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Customer",
+      "fields": [
+        {"name": "customerId", "type": "string", "required": true, "create": true},
+        {"name": "name", "type": "string", "required": true},
+        {"name": "email", "type": "string", "required": false},
+        {"name": "phone", "type": "string", "required": false},
+        {"name": "loyaltyPoints", "type": "number", "required": false},
+        {"name": "createdDate", "type": "date", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Order",
+      "fields": [
+        {"name": "orderId", "type": "string", "required": true, "create": true},
+        {"name": "customerId", "type": "string", "required": false},
+        {"name": "orderDate", "type": "date", "required": true},
+        {"name": "status", "type": "string", "required": true},
+        {"name": "totalAmount", "type": "number", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "OrderItem",
+      "fields": [
+        {"name": "orderItemId", "type": "string", "required": true, "create": true},
+        {"name": "orderId", "type": "string", "required": true},
+        {"name": "productId", "type": "string", "required": true},
+        {"name": "quantity", "type": "number", "required": true},
+        {"name": "unitPrice", "type": "number", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Payment",
+      "fields": [
+        {"name": "paymentId", "type": "string", "required": true, "create": true},
+        {"name": "orderId", "type": "string", "required": true},
+        {"name": "amount", "type": "number", "required": true},
+        {"name": "paymentMethod", "type": "string", "required": true},
+        {"name": "paymentDate", "type": "date", "required": true},
+        {"name": "status", "type": "string", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Inventory",
+      "fields": [
+        {"name": "inventoryId", "type": "string", "required": true, "create": true},
+        {"name": "productId", "type": "string", "required": true},
+        {"name": "stock", "type": "number", "required": true},
+        {"name": "lastUpdated", "type": "date", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Employee",
+      "fields": [
+        {"name": "employeeId", "type": "string", "required": true, "create": true},
+        {"name": "name", "type": "string", "required": true},
+        {"name": "role", "type": "string", "required": true},
+        {"name": "email", "type": "string", "required": true},
+        {"name": "phone", "type": "string", "required": false},
+        {"name": "joinedDate", "type": "date", "required": true}
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "Order",
+      "target": "Customer",
+      "relationship": "placedBy"
+    },
+    {
+      "source": "OrderItem",
+      "target": "Order",
+      "relationship": "partOf"
+    },
+    {
+      "source": "OrderItem",
+      "target": "Product",
+      "relationship": "references"
+    },
+    {
+      "source": "Payment",
+      "target": "Order",
+      "relationship": "paysFor"
+    },
+    {
+      "source": "Inventory",
+      "target": "Product",
+      "relationship": "tracks"
+    }
+  ],
+  "businessRules": [
+    {
+      "entity": "Inventory",
+      "name": "lowStockAlert",
+      "conditions": [
+        {"field": "stock", "operator": "<", "value": 5}
+      ],
+      "actions": [
+        {"type": "notify", "target": "employeeId", "message": "Low stock warning for product"}
+      ]
+    },
+    {
+      "entity": "OrderItem",
+      "name": "autoCalculateTotal",
+      "conditions": [],
+      "actions": [
+        {"type": "calculate", "target": "Order", "formula": "SUM(OrderItem.quantity * OrderItem.unitPrice)"}
+      ]
+    },
+    {
+      "entity": "Payment",
+      "name": "autoUpdateOrderStatus",
+      "conditions": [
+        {"field": "status", "operator": "==", "value": "Completed"}
+      ],
+      "actions": [
+        {"type": "update", "target": "Order", "field": "status", "value": "Paid"}
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "orderCreated",
+      "entity": "Order",
+      "fields": ["orderId", "customerId", "orderDate", "status"]
+    },
+    {
+      "name": "paymentProcessed",
+      "entity": "Payment",
+      "fields": ["paymentId", "orderId", "amount", "status"]
+    },
+    {
+      "name": "inventoryUpdated",
+      "entity": "Inventory",
+      "fields": ["inventoryId", "productId", "stock"]
+    },
+    {
+      "name": "employeeJoined",
+      "entity": "Employee",
+      "fields": ["employeeId", "name", "role", "joinedDate"]
+    }
+  ]
+}

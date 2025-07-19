@@ -1,9 +1,102 @@
-openapi: "3.0.2"
+openapi: 3.0.0
 info:
-  title: Non-oAuth Scopes example
-  description: sample
+  title: Ingestor Service
+  description: API for processing graph-based input to generate microservices and REST endpoints.
   version: 1.0.0
+servers:
+  - url: http://localhost:8081
+    description: Local development server
 paths:
+  /graph/process:
+    post:
+      summary: Process a graph input
+      description: Accepts a graph-based input (nodes and edges) and generates microservices, REST endpoints, and OpenAPI specs.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GraphInput'
+      responses:
+        '200':
+          description: Graph processed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Graph processed successfully"
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid graph input"
+
+  /graph/{id}:
+    get:
+      summary: Retrieve graph by MongoDB ObjectId
+      description: Fetches the MongoDB document corresponding to the provided ObjectId.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The MongoDB ObjectId of the graph document to retrieve
+          schema:
+            type: string
+            example: "660a5a3e1f1bfc5e88b8d2d1"
+      responses:
+        '200':
+          description: Graph document retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "660a5a3e1f1bfc5e88b8d2d1"
+                  data:
+                    type: object
+                    example:
+                      name: "Sample Graph"
+                      nodes:
+                        - id: "1"
+                          label: "Node A"
+                        - id: "2"
+                          label: "Node B"
+                      edges:
+                        - source: "1"
+                          target: "2"
+                          label: "Edge AB"
+        '404':
+          description: Document not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Document not found"
+        '400':
+          description: Invalid ObjectId format
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid ObjectId format"
+
+
   /HikeList/user/{userID}:
     post:
       summary: Get the details of the specific user
@@ -54,9 +147,87 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
 components:
   schemas:
+    GraphInput:
+      type: object
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Node'
+        edges:
+          type: array
+          items:
+            $ref: '#/components/schemas/Edge'
+    Node:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [ ENTITY, RULE, EVENT ]
+          example: "entity"
+        name:
+          type: string
+          example: "Employee"
+        fields:
+          type: array
+          items:
+            $ref: '#/components/schemas/Field'
+        conditions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Condition'
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Action'
+    Edge:
+      type: object
+      properties:
+        source:
+          type: string
+          example: "Employee"
+        target:
+          type: string
+          example: "Department"
+        relationship:
+          type: string
+          example: "belongsTo"
+    Field:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "employeeId"
+        type:
+          type: string
+          example: "string"
+        required:
+          type: boolean
+          example: true
+    Condition:
+      type: object
+      properties:
+        field:
+          type: string
+          example: "department"
+        operator:
+          type: string
+          example: "in"
+        value:
+          type: object
+          example: ["HR", "Finance", "Engineering"]
+    Action:
+      type: object
+      properties:
+        type:
+          type: string
+          example: "error"
+        message:
+          type: string
+          example: "Invalid department"
+
     RTPHikers:
       type: "object"
       properties:
