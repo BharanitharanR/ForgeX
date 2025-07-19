@@ -95,19 +95,83 @@ Consumes and processes external metadata and converts it into openapi spec
 **Endpoints:**
 
 ```
-POST /HikeList/user/{userID}   ➔ Inserts user data
-GET /HikeList/user/{userID}    ➔ Retrieves user data
+  /graph/process:
+    post:
+      summary: Process a graph input
+      description: Accepts a graph-based input (nodes and edges) and generates microservices, REST endpoints, and OpenAPI specs.
+      
+  /graph/{id}:
+    get:
+      summary: Retrieve status of the deployment
 ```
 
 **Sample Payload:**
-
+- To generate a Simple APplication that maintains purchase orders
 ```json
 {
-  "userID": "123",
-  "name": "John Doe",
-  "lastModifiedTimeStamp": {
-    "$date": "2025-03-22T10:00:00Z"
-  }
+  "nodes": [
+    {
+      "type": "ENTITY",
+      "name": "PurchaseOrder",
+      "fields": [
+        {"name": "poId", "type": "string", "required": true},
+        {"name": "date", "type": "date", "required": true},
+        {"name": "supplierId", "type": "string", "required": true},
+        {"name": "status", "type": "string", "required": false, "default": "Pending"},
+        {"name": "totalAmount", "type": "number", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Supplier",
+      "fields": [
+        {"name": "supplierId", "type": "string", "required": true},
+        {"name": "name", "type": "string", "required": true},
+        {"name": "contact", "type": "string", "required": false},
+        {"name": "address",:
+          "string", "required": false}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "PurchaseOrderLineItem",
+      "fields": [
+        {"name": "lineItemId", "type": "string", "required": true},
+        {"name": "poId", "type": "string", "required": true},
+        {"name": "productId", "type": "string", "required": true},
+        {"name": "quantity", "type": "number", "required": true},
+        {"name": "unitPrice", "type": "number", "required": true},
+        {"name": "totalPrice", "type": "number", "required": true}
+      ]
+    },
+    {
+      "type": "ENTITY",
+      "name": "Product",
+      "fields": [
+        {"name": "productId", "type": "string", "required": true},
+        {"name": "name", "type": "string", "required": true},
+        {"name": "description", "type": "string", "required": false},
+        {"name": "price", "type": "number", "required": true}
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "PurchaseOrder",
+      "target": "Supplier",
+      "relationship": "RELATED_TO"
+    },
+    {
+      "source": "PurchaseOrder",
+      "target": "PurchaseOrderLineItem",
+      "relationship": "HAS_LINE_ITEMS"
+    },
+    {
+      "source": "PurchaseOrderLineItem",
+      "target": "Product",
+      "relationship": "REFERS_TO"
+    }
+  ]
 }
 ```
 
@@ -175,13 +239,65 @@ volumes:
 ```
 
 ---
+## 🚀 Tech Stack & Badges
+
+![Java](https://img.shields.io/badge/Java-17-blue?logo=java)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-2.7+-brightgreen?logo=spring)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-green?logo=mongodb)
+![Docker](https://img.shields.io/badge/Docker-Containerized-blue?logo=docker)
+![OpenAPI](https://img.shields.io/badge/OpenAPI-3.0-orange?logo=swagger)
+![LLM](https://img.shields.io/badge/LLM-Ready-purple?logo=openai)
+![NGINX](https://img.shields.io/badge/NGINX-Reverse--Proxy-lightgrey?logo=nginx)
+![CI/CD](https://img.shields.io/badge/GitHub_Actions-Ready-blue?logo=githubactions)
+
+## Architectural flow
+
+                +-------------------+
+                |   OpenWeb UI      |
+                | (ChatGPT-like UI) |
+                +--------+----------+
+                         |
+                         v
+              +------------------------+
+              |   MCP Server (Python)  |
+              |  (Model Context Layer) |
+              +-----+------------------+
+                           |
+            +--------------+
+            |                              
+            v                              
+        +------------+           +------------------+
+        | Ingestor   |           | Entity Builder   |
+        | Service    |---------> | (Microservice Gen)|
+        +------------+           +------------------+
+                 \                         /
+                  \                       /
+                   v                     v
+                    +-----------------+
+                    |   MongoDB       |
+                    | (Data Store)    |
+                    +-----------------+
+
+           +-----------------+
+           | Integrator Svc  |
+           | (Aggregation &  |
+           | Orchestration)  |
+           +-----------------+
+
+           +-----------------+
+           |   NGINX Proxy   |
+           +-----------------+
+
+           +-----------------+
+           | Eureka Registry |
+           +-----------------+
 
 ## 🚀 Build and Run
 
-### 1. Build All Modules
+### 1. Build All Modules and brings the DOcker images up and running
 
 ```sh
-mvn clean install
+mvn clean install -DskipTests
 ```
 
 First-time setup:
@@ -189,19 +305,21 @@ First-time setup:
 ```sh
 mvn install -N
 ```
-
-### 2. Run Modules Locally
-
+- Following are the list of docker containers that are run when you run mvn clean install -Dskiptests 
 ```sh
-# Platform Module
-mvn spring-boot:run -pl platform
+| Container Name        | Image Name                               | Description                                                                                                |
+| --------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `entitybuilder-1`     | `forgex/entitybuilder:0.0.1-SNAPSHOT`    | Dynamically builds microservices and entities from graph-based metadata.                                   |
+| `ingestor-service-1`  | `forgex/ingestor-service:0.0.1-SNAPSHOT` | Handles ingestion of user-defined metadata (nodes/edges) and persists them into MongoDB.                   |
+| `forgex-mcp-server-1` | `forgex/forgex-mcp-server:0.0.1`         | Model Context Protocol (MCP) server. Acts as a gateway between LLMs and ForgeX services like the Ingestor. |
+| `registry-service-1`  | `registry-service:0.0.1-SNAPSHOT`        | Spring Cloud Eureka service registry for microservice discovery and health checks.                         |
+| `nginx-1`             | `nginx:latest`                           | Reverse proxy that routes requests to appropriate internal services.                                       |
+| `mongo-1`             | `mongo:latest`                           | MongoDB instance backing metadata and graph storage.                                                       |
+| `open-webui-1`        | `ghcr.io/open-webui/open-webui:main`     | ChatGPT-like interface that connects to the LLM and facilitates communication with the MCP server.         |
+| `integrator-1`        | `forgex/integrator:0.0.1-SNAPSHOT`       | Orchestrates cross-service interactions, aggregates data, and performs external API integration.           |
 
-# Ingestor Service Module
-mvn spring-boot:run -pl ingestor-service
-
-# Integrator Service Module
-mvn spring-boot:run -pl integrator-service
 ```
+
 
 ---
 

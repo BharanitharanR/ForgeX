@@ -630,7 +630,7 @@ public class {{className}} {
         return "http://localhost:" + port;
     }
 
-    private int getFreePort() {
+    private  synchronized  int getFreePort() {
             return PortProvider.getPort();
     }
 
